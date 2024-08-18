@@ -11,8 +11,13 @@ jobs:
       - name: Check out current repository
         uses: actions/checkout@v4
 
-      - name: Elm Land Deploy
+      - name: Create virtual environment
         run: |
-          cd frontend/
-          elm-land build
-          rsync -r --delete-delay dist/ /var/www/seaofthieves.timeofjustice.eu/backend/
+          cd backend/
+          python3 -m venv .env
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Django Deploy
+        run: |
+          rsync -r --delete-delay backend/ /var/www/seaofthieves.timeofjustice.eu/backend/
