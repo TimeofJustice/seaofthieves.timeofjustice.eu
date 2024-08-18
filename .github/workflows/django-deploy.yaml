@@ -1,4 +1,4 @@
-name: Elm Land Deployment
+name: Django Deployment
 
 on: push
 
@@ -15,4 +15,4 @@ jobs:
         run: |
           cd frontend/
           elm-land build
-          rsync -r --delete-delay dist/ /var/www/seaofthieves.timeofjustice.eu/frontend/
+          rsync -r --delete-delay dist/ /var/www/seaofthieves.timeofjustice.eu/backend/
