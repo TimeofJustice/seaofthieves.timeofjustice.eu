@@ -13,9 +13,9 @@ jobs:
 
       - name: Create virtual environment
         run: |
-          cd /var/www/seaofthieves.timeofjustice.eu/
-          python3.12 -m venv .env
-          source .env/bin/activate
+          cd backend/
+          python3.12 -m venv /var/www/seaofthieves.timeofjustice.eu/.env
+          source /var/www/seaofthieves.timeofjustice.eu/.env/bin/activate
           pip3.12 install -r requirements.txt
 
       - name: Run Django migrations
