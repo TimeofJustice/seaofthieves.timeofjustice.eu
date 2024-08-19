@@ -1,6 +1,8 @@
 name: Elm Land Deployment
 
-on: push
+on: 
+  push:
+    branches: [release]
 
 jobs:
   deploy:
