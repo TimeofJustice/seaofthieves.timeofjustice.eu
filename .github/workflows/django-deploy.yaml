@@ -24,6 +24,16 @@ jobs:
           source /var/www/seaofthieves.timeofjustice.eu/.env/bin/activate
           python3.8 manage.py migrate
 
+      - name: Collect static files
+        run: |
+          cd backend/
+          source /var/www/seaofthieves.timeofjustice.eu/.env/bin/activate
+          python3.8 manage.py collectstatic --noinput
+
       - name: Django Deploy
         run: |
           rsync -r --delete-delay backend/ /var/www/seaofthieves.timeofjustice.eu/backend/
+
+      - name: Restart Django
+        run: |
+          sudo systemctl restart apache2
