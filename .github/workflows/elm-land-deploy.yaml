@@ -18,6 +18,5 @@ jobs:
       - name: Elm Land Deploy
         run: |
           cd frontend/
-          node -v
           elm-land build
           rsync -r --delete-delay dist/ /var/www/seaofthieves.timeofjustice.eu/frontend/

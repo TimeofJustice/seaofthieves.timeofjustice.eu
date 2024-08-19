@@ -36,4 +36,4 @@ jobs:
 
       - name: Restart Django
         run: |
-          sudo systemctl restart apache2
+          touch /var/www/seaofthieves.timeofjustice.eu/backend/backend/wsgi.py
