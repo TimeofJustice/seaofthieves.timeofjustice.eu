@@ -17,7 +17,7 @@ import configparser
 if os.name == 'nt':
     ROOT = "./"
 else:
-    ROOT = "/home/jonas/seaofthieves/backend/"
+    ROOT = "/var/www/seaofthieves.timeofjustice.eu/"
 
 CONFIG_FILE = ROOT + 'config.ini'
 
