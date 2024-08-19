@@ -11,6 +11,10 @@ jobs:
       - name: Check out current repository
         uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Elm Land Deploy
         run: |
           cd frontend/
