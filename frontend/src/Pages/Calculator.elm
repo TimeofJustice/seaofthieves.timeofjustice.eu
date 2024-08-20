@@ -25,13 +25,13 @@ page _ _ =
 
 
 type alias Model =
-    { rituals : Int
+    { rituals : Maybe Int
     }
 
 
 init : () -> ( Model, Effect Msg )
 init _ =
-    ( { rituals = 0 }
+    ( { rituals = Nothing }
     , Effect.none
     )
 
@@ -47,12 +47,12 @@ update msg model =
             let
                 maybeRituals =
                     if String.isEmpty rituals then
-                        0
+                        Nothing
 
                     else
                         case String.toInt rituals of
                             Just value ->
-                                value
+                                Just value
 
                             Nothing ->
                                 model.rituals
@@ -80,7 +80,13 @@ bodyView model =
             [ Components.textInput
                 { label = "Anzahl der Rituale"
                 , onInput = ChangeRituals
-                , value = String.fromInt model.rituals
+                , value =
+                    case model.rituals of
+                        Just rituals ->
+                            String.fromInt rituals
+
+                        Nothing ->
+                            ""
                 }
             , table [ css [ Tw.p_3 ] ]
                 [ thead []
@@ -106,9 +112,17 @@ bodyView model =
         ]
 
 
-calcGold : Int -> Float -> Float
-calcGold rituals multiplier =
+calcGold : Maybe Int -> Float -> Float
+calcGold maybeRituals multiplier =
     let
+        rituals =
+            case maybeRituals of
+                Just value ->
+                    value
+
+                Nothing ->
+                    0
+
         gold =
             if rituals < 1 then
                 14000
