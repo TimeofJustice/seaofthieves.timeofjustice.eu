@@ -1,4 +1,4 @@
-module Pages.Home_ exposing (page, Model, Msg)
+module Pages.Calculator exposing (page, Model, Msg)
 
 import Auth
 import Components
@@ -46,10 +46,10 @@ update msg model =
 
 view : Model -> View Msg
 view model =
-    { title = "Home - Sea of Thieves"
+    { title = "Login - CampusNotes"
     , body =
         Components.body
-            { titles = [ "Home" ]
+            { titles = [ "Login" ]
             , content = [ bodyView model ]
             }
     }
