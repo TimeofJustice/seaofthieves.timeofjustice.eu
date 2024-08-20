@@ -22,7 +22,7 @@ jobs:
       - name: Get old database
         run: |
           cd backend/
-          rsync -r /var/www/seaofthieves.beta.timeofjustice.eu/backend/db.sqlite3 ./db.sqlite3
+          rsync -r /var/www/seaofthieves.timeofjustice.eu/backend/db.sqlite3 ./db.sqlite3
 
       - name: Run Django migrations
         run: |
