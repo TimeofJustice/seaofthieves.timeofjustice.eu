@@ -1,4 +1,4 @@
-module Components exposing (body)
+module Components exposing (body, textInput)
 
 import Css
 import Html
@@ -9,6 +9,44 @@ import Route.Path exposing (Path)
 import Tailwind.Color
 import Tailwind.Theme as Tw
 import Tailwind.Utilities as Tw
+
+
+inputLabel : List Css.Style
+inputLabel =
+    [ Tw.flex_col
+    , Tw.space_y_1
+    , Tw.flex
+    ]
+
+
+baseInputStyle : List Css.Style
+baseInputStyle =
+    [ Tw.relative
+    , Tw.border_2
+    , Tw.border_solid
+    , Tw.border_color Tw.gray_200
+    , Tw.outline_none
+    , Tw.rounded
+    , Tw.p_2
+    , Tw.text_sm
+    , Tw.font_sans
+    , Tw.resize_y
+    , Css.focus [ Tw.border_color Tw.gray_400 ]
+    ]
+
+
+textInput : { label : String, onInput : String -> msg, value : String } -> Html msg
+textInput settings =
+    label [ css inputLabel ]
+        [ div [] [ text settings.label ]
+        , input
+            [ placeholder settings.label
+            , value settings.value
+            , onInput settings.onInput
+            , css baseInputStyle
+            ]
+            []
+        ]
 
 
 navBarStyle : List Css.Style

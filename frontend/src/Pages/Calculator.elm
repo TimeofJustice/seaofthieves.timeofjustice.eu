@@ -1,9 +1,9 @@
-module Pages.Calculator exposing (page, Model, Msg)
+module Pages.Calculator exposing (Model, Msg, page)
 
 import Auth
 import Components
 import Effect exposing (Effect)
-import Html.Styled exposing (Html, div, text)
+import Html.Styled exposing (Html, div, table, tbody, td, text, th, thead, tr)
 import Html.Styled.Attributes exposing (css)
 import Http
 import Page exposing (Page)
@@ -25,31 +25,49 @@ page _ _ =
 
 
 type alias Model =
-    {}
+    { rituals : Int
+    }
 
 
 init : () -> ( Model, Effect Msg )
 init _ =
-    ( {}, Effect.none )
+    ( { rituals = 0 }
+    , Effect.none
+    )
 
 
 type Msg
-    = NoOp
+    = ChangeRituals String
 
 
 update : Msg -> Model -> ( Model, Effect Msg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model, Effect.none )
+        ChangeRituals rituals ->
+            let
+                maybeRituals =
+                    if String.isEmpty rituals then
+                        0
+
+                    else
+                        case String.toInt rituals of
+                            Just value ->
+                                value
+
+                            Nothing ->
+                                model.rituals
+            in
+            ( { model | rituals = maybeRituals }
+            , Effect.none
+            )
 
 
 view : Model -> View Msg
 view model =
-    { title = "Login - CampusNotes"
+    { title = "Calculator - SeaofThieves"
     , body =
         Components.body
-            { titles = [ "Login" ]
+            { titles = [ "Burning Blade" ]
             , content = [ bodyView model ]
             }
     }
@@ -58,6 +76,44 @@ view model =
 bodyView : Model -> Html Msg
 bodyView model =
     div []
-        [ div [ css [ Tw.flex, Tw.justify_center, Tw.items_center, Tw.h_full ] ]
-            [ text "Home" ]
+        [ div [ css [ Tw.flex, Tw.flex_col, Tw.justify_center, Tw.items_center, Tw.h_full ] ]
+            [ Components.textInput
+                { label = "Anzahl der Rituale"
+                , onInput = ChangeRituals
+                , value = String.fromInt model.rituals
+                }
+            , table [ css [ Tw.p_3 ] ]
+                [ thead []
+                    [ tr []
+                        [ th [] [ text "Stufe I" ]
+                        , th [] [ text "Stufe II" ]
+                        , th [] [ text "Stufe III" ]
+                        , th [] [ text "Stufe IV" ]
+                        , th [] [ text "Stufe V" ]
+                        ]
+                    ]
+                , tbody []
+                    [ tr []
+                        [ td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.0) ++ " Gold") ]
+                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.33) ++ " Gold") ]
+                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.67) ++ " Gold") ]
+                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 2) ++ " Gold") ]
+                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 2.5) ++ " Gold") ]
+                        ]
+                    ]
+                ]
+            ]
         ]
+
+
+calcGold : Int -> Float -> Float
+calcGold rituals multiplier =
+    let
+        gold =
+            if rituals < 1 then
+                14000
+
+            else
+                26000 * rituals
+    in
+    toFloat gold * multiplier
