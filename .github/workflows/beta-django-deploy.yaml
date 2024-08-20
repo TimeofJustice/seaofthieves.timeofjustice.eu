@@ -38,8 +38,8 @@ jobs:
 
       - name: Django Deploy
         run: |
-          rsync -r --delete-delay backend/ /var/www/seaofthieves.beta.timeofjustice.eu/backend/
+          rsync -r --delete-delay backend/ /var/www/seaofthievesbeta.timeofjustice.eu/backend/
 
       - name: Restart Django
         run: |
-          touch /var/www/seaofthieves.beta.timeofjustice.eu/backend/backend/wsgi.py
+          touch /var/www/seaofthievesbeta.timeofjustice.eu/backend/backend/wsgi.py
