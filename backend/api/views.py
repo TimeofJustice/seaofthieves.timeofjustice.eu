@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from .models import Page
+from .models import Page, Wiki
 
 
 def to_response(was_successful, data, message=''):
@@ -61,3 +61,92 @@ def burning_blade(request):
             }
         ]
         })
+
+
+def module_to_dict(module):
+    if module.type == 'text':
+        return {
+            'type': 'text',
+            'value': {
+                'title': module.title,
+                'content': module.content
+            }
+        }
+    elif module.type == 'block':
+        return {
+            'type': 'block',
+            'value': {
+                'content': module.content
+            }
+        }
+    elif module.type == 'image':
+        return {
+            'type': 'image',
+            'value': {
+                'description': module.description,
+                'path': module.path
+            }
+        }
+    elif module.type == 'table':
+        columns = []
+        for column in module.columns.all():
+            columns.append(column.title)
+
+        rows = []
+        for row in module.rows.all():
+            row_columns = []
+            for column in row.columns.all():
+                row_columns.append(row_to_dict(column))
+            rows.append(row_columns)
+
+        return {
+            'type': 'table',
+            'value': {
+                'title': module.title,
+                'columns': columns,
+                'rows': rows
+            }
+        }
+    
+
+def row_to_dict(row):
+    if row.type == 'text':
+        return {
+            'type': 'text',
+            'value': row.title
+        }
+    elif row.type == 'gold':
+        return {
+            'type': 'gold',
+            'value': row.amount
+        }
+
+
+def wiki_to_dict(wiki):
+    more = []
+
+    for page in wiki.more.all():
+        more.append({
+            'title': page.title,
+            'route': page.path,
+        })
+
+    modules = []
+
+    for module in wiki.modules.all():
+        modules.append(module_to_dict(module))
+
+    return {
+        'title': wiki.title,
+        'modules': modules,
+        'more': more
+    }
+
+
+def wiki_page(request, page):
+    wiki = Wiki.objects.filter(title__iexact=page).first()
+
+    if wiki is None:
+        return to_response(False, {}, 'not_found')
+    
+    return to_response(True, wiki_to_dict(wiki))
