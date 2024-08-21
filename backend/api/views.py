@@ -84,6 +84,7 @@ def wiki_page(request, page):
             {
                 'type': 'table',
                 'value': {
+                    'title': 'Fish Prices',
                     'columns': ['Fish', 'Sell Price'],
                     'rows': [
                         [
