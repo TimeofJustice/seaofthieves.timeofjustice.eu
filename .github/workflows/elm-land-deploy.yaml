@@ -3,6 +3,8 @@ name: Elm Land Deployment
 on: 
   push:
     branches: [release]
+    paths:
+      - frontend/**
 
 jobs:
   deploy:

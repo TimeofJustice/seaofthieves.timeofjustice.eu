@@ -1,8 +1,10 @@
 name: Django Deployment
 
-on: 
+on:
   push:
     branches: [release]
+    paths:
+      - backend/**
 
 jobs:
   deploy:
@@ -19,11 +21,6 @@ jobs:
           python3.12 -m venv .env
           source .env/bin/activate
           pip3.12 install -r requirements.txt
-
-      - name: Get old database
-        run: |
-          cd backend/
-          rsync -r /var/www/seaofthieves.timeofjustice.eu/backend/db.sqlite3 ./db.sqlite3
 
       - name: Run Django migrations
         run: |
