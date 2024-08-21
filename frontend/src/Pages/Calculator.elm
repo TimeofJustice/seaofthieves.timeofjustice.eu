@@ -111,7 +111,7 @@ bodyView model =
                     ]
                 ]
             ]
-        , popular = [ "Test" ]
+        , popular = [ { title = "Fish", route = Route.Path.Fish } ]
         }
 
 

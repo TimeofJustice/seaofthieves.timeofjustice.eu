@@ -1,5 +1,6 @@
 module Components exposing (body, container, textInput, titleDiv)
 
+import Api.Page
 import Css exposing (url)
 import Html
 import Html.Styled exposing (Html, a, button, div, img, input, label, option, select, span, text, textarea)
@@ -115,10 +116,11 @@ popularStyle =
     , Tw.p_2
     , Tw.w_full
     , Tw.box_border
+    , Css.hover [ Tw.bg_color Tw.teal_700 ]
     ]
 
 
-container : { content : List (Html msg), popular : List String } -> Html msg
+container : { content : List (Html msg), popular : List Api.Page.Page } -> Html msg
 container settings =
     div [ css containerStyle ]
         [ div [ css containerInnerStyle ] settings.content
@@ -127,7 +129,7 @@ container settings =
                 text ""
 
             _ ->
-                div [ css containerPopularStyle ] (div [ css popularTitleStyle ] [ text "Popular" ] :: List.map (\title -> div [ css popularStyle ] [ text title ]) settings.popular)
+                div [ css containerPopularStyle ] (div [ css popularTitleStyle ] [ text "Popular" ] :: List.map (\page -> a [ css [ Tw.no_underline ], fromUnstyled (Route.Path.href page.route) ] [ div [ css popularStyle ] [ text page.title ] ]) settings.popular)
         ]
 
 
@@ -195,6 +197,7 @@ innerStyle =
 backgroundImageStyle : String -> List Css.Style
 backgroundImageStyle bgUrl =
     [ Css.backgroundImage (url bgUrl)
+    , Tw.bg_color Tw.teal_900
     , Tw.bg_cover
     , Tw.bg_center
     , Tw.bg_no_repeat
