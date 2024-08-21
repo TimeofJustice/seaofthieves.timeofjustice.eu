@@ -6,9 +6,10 @@ import Api.Responses.BurningCalculator
 import Api.Responses.Visit
 import Auth
 import Components
+import Css
 import Effect exposing (Effect)
-import Html.Styled exposing (Html, div, table, tbody, td, text, th, thead, tr)
-import Html.Styled.Attributes exposing (css)
+import Html.Styled exposing (Html, div, img, table, tbody, td, text, th, thead, tr)
+import Html.Styled.Attributes exposing (css, src)
 import Http
 import Http.Extra
 import Page exposing (Page)
@@ -16,6 +17,8 @@ import ResponseData exposing (ResponseData(..))
 import Route exposing (Route)
 import Route.Path
 import Shared
+import Tailwind.Extra as Tw
+import Tailwind.Theme as Tw
 import Tailwind.Utilities as Tw
 import View exposing (View)
 
@@ -151,9 +154,43 @@ bodyView model =
         }
 
 
+tableStyle : List Css.Style
+tableStyle =
+    [ Tw.w_full
+    , Tw.border
+    , Tw.border_collapse
+    , Tw.p_3
+    , Tw.bg_color Tw.teal_900
+    , Tw.border_1
+    , Tw.border_solid
+    , Tw.border_color Tw.emerald_700
+    ]
+
+
+cellStyle : List Css.Style
+cellStyle =
+    [ Tw.p_3
+    , Tw.border_1
+    , Tw.border_solid
+    , Tw.border_color Tw.emerald_700
+    , Tw.text_center
+    ]
+
+
+innerCellStyle : List Css.Style
+innerCellStyle =
+    [ Tw.flex
+    , Tw.flex_row
+    , Tw.items_center
+    , Tw.justify_center
+    , Tw.space_x_1
+    ]
+
+
 pageView : Api.Responses.BurningCalculator.PageInfo -> Maybe Int -> List (Html Msg)
 pageView pageInfo rituals =
     [ Components.titleDiv pageInfo.title
+    , div [] [ text pageInfo.description ]
     , Components.textInput
         { label = "Amount of Rituals"
         , onInput = ChangeRituals
@@ -165,27 +202,35 @@ pageView pageInfo rituals =
                 Nothing ->
                     ""
         }
-    , table [ css [ Tw.p_3 ] ]
+    , table [ css tableStyle ]
         [ thead []
             [ tr []
-                [ th [] [ text "Grade I" ]
-                , th [] [ text "Grade II" ]
-                , th [] [ text "Grade III" ]
-                , th [] [ text "Grade IV" ]
-                , th [] [ text "Grade V" ]
+                [ th [ css cellStyle ] [ text "Grade I" ]
+                , th [ css cellStyle ] [ text "Grade II" ]
+                , th [ css cellStyle ] [ text "Grade III" ]
+                , th [ css cellStyle ] [ text "Grade IV" ]
+                , th [ css cellStyle ] [ text "Grade V" ]
                 ]
             ]
         , tbody []
             [ tr []
-                [ td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold rituals pageInfo.emissaryValues.grade1) ++ " Gold") ]
-                , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold rituals pageInfo.emissaryValues.grade2) ++ " Gold") ]
-                , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold rituals pageInfo.emissaryValues.grade3) ++ " Gold") ]
-                , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold rituals pageInfo.emissaryValues.grade4) ++ " Gold") ]
-                , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold rituals pageInfo.emissaryValues.grade5) ++ " Gold") ]
-                ]
+                (List.map
+                    goldView
+                    [ calcGold rituals pageInfo.emissaryValues.grade1
+                    , calcGold rituals pageInfo.emissaryValues.grade2
+                    , calcGold rituals pageInfo.emissaryValues.grade3
+                    , calcGold rituals pageInfo.emissaryValues.grade4
+                    , calcGold rituals pageInfo.emissaryValues.grade5
+                    ]
+                )
             ]
         ]
     ]
+
+
+goldView : Float -> Html msg
+goldView gold =
+    td [ css cellStyle ] [ div [ css innerCellStyle ] [ div [] [ text (String.fromFloat gold) ], Components.goldView ] ]
 
 
 calcGold : Maybe Int -> Float -> Float

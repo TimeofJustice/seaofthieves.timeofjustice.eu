@@ -44,7 +44,7 @@ def visit_page(request):
 def burning_blade(request):
     return to_response(True, {
         'title': 'Burning Blade (Calculator)',
-        'description': '',
+        'description': 'Calculate the value of the Burning Blade ritual in Sea of Thieves according to the emissary grade.',
         'baseValue': 14000,
         'ritualValue': 26000,
         'emissaryValues': {

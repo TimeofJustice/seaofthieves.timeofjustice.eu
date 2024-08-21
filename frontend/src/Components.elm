@@ -1,4 +1,4 @@
-module Components exposing (body, container, errorView, loadingView, textInput, titleDiv)
+module Components exposing (body, container, errorView, loadingView, textInput, titleDiv, goldView)
 
 import Api.Responses.Page
 import Css exposing (url)
@@ -89,6 +89,7 @@ containerInnerStyle =
     , Tw.flex_1
     , Tw.p_10
     , Css.property "backdrop-filter" "blur(8px)"
+    , Tw.space_y_3
     ]
 
 
@@ -205,6 +206,11 @@ errorTextStyle =
 errorView : String -> Html msg
 errorView message =
     div [ css errorTextStyle ] [ text message ]
+
+
+goldView : Html msg
+goldView =
+    img [ src "https://timeofjustice.eu/global/sea-of-thieves-gold.webp" ] []
 
 
 navBarStyle : List Css.Style
