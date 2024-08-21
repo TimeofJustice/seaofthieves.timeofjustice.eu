@@ -51,6 +51,7 @@ view model =
         Components.body
             { titles = [ "Home" ]
             , content = [ bodyView model ]
+            , background = "https://timeofjustice.eu/global/background/sea-of-thieves-cannon-guild.jpg"
             }
     }
 

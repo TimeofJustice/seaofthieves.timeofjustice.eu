@@ -69,43 +69,42 @@ view model =
         Components.body
             { titles = [ "Burning Blade" ]
             , content = [ bodyView model ]
+            , background = "https://timeofjustice.eu/global/background/sea-of-thieves-sinking-the-burning-blade.webp"
             }
     }
 
 
 bodyView : Model -> Html Msg
 bodyView model =
-    div []
-        [ div [ css [ Tw.flex, Tw.flex_col, Tw.justify_center, Tw.items_center, Tw.h_full ] ]
-            [ Components.textInput
-                { label = "Anzahl der Rituale"
-                , onInput = ChangeRituals
-                , value =
-                    case model.rituals of
-                        Just rituals ->
-                            String.fromInt rituals
+    Components.container
+        [ Components.textInput
+            { label = "Anzahl der Rituale"
+            , onInput = ChangeRituals
+            , value =
+                case model.rituals of
+                    Just rituals ->
+                        String.fromInt rituals
 
-                        Nothing ->
-                            ""
-                }
-            , table [ css [ Tw.p_3 ] ]
-                [ thead []
-                    [ tr []
-                        [ th [] [ text "Stufe I" ]
-                        , th [] [ text "Stufe II" ]
-                        , th [] [ text "Stufe III" ]
-                        , th [] [ text "Stufe IV" ]
-                        , th [] [ text "Stufe V" ]
-                        ]
+                    Nothing ->
+                        ""
+            }
+        , table [ css [ Tw.p_3 ] ]
+            [ thead []
+                [ tr []
+                    [ th [] [ text "Stufe I" ]
+                    , th [] [ text "Stufe II" ]
+                    , th [] [ text "Stufe III" ]
+                    , th [] [ text "Stufe IV" ]
+                    , th [] [ text "Stufe V" ]
                     ]
-                , tbody []
-                    [ tr []
-                        [ td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.0) ++ " Gold") ]
-                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.33) ++ " Gold") ]
-                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.67) ++ " Gold") ]
-                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 2) ++ " Gold") ]
-                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 2.5) ++ " Gold") ]
-                        ]
+                ]
+            , tbody []
+                [ tr []
+                    [ td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.0) ++ " Gold") ]
+                    , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.33) ++ " Gold") ]
+                    , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.67) ++ " Gold") ]
+                    , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 2) ++ " Gold") ]
+                    , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 2.5) ++ " Gold") ]
                     ]
                 ]
             ]

@@ -1,12 +1,13 @@
-module Components exposing (body, textInput)
+module Components exposing (body, container, textInput)
 
-import Css
+import Css exposing (url)
 import Html
-import Html.Styled exposing (Html, a, button, div, input, label, option, select, span, text, textarea)
-import Html.Styled.Attributes exposing (css, disabled, fromUnstyled, placeholder, readonly, rows, selected, type_, value)
+import Html.Styled exposing (Html, a, button, div, img, input, label, option, select, span, text, textarea)
+import Html.Styled.Attributes exposing (css, disabled, fromUnstyled, placeholder, readonly, rows, selected, src, type_, value)
 import Html.Styled.Events exposing (onBlur, onClick, onInput)
 import Route.Path exposing (Path)
 import Tailwind.Color
+import Tailwind.Extra as Tw
 import Tailwind.Theme as Tw
 import Tailwind.Utilities as Tw
 
@@ -49,6 +50,28 @@ textInput settings =
         ]
 
 
+containerStyle : List Css.Style
+containerStyle =
+    [ Tw.bg_color Tw.teal_900
+    , Tw.bg_opacity_75
+    , Tw.backdrop_blur_3xl
+    , Tw.flex_1
+    , Tw.h_auto
+    , Tw.p_10
+    , Tw.w_full
+    , Tw.max_w_6xl
+    , Tw.rounded
+    , Tw.border_1
+    , Tw.border_solid
+    , Tw.border_color Tw.emerald_700
+    ]
+
+
+container : List (Html msg) -> Html msg
+container content =
+    div [ css containerStyle ] content
+
+
 navBarStyle : List Css.Style
 navBarStyle =
     [ Tw.sticky
@@ -57,12 +80,9 @@ navBarStyle =
     , Tw.items_center
     , Tw.justify_between
     , Tw.flex
-    , Tw.border_0
-    , Tw.border_b_2
-    , Tw.border_solid
-    , Tw.border_color Tw.gray_200
-    , Tw.p_3
-    , Tw.bg_color Tw.white
+    , Tw.p_4
+    , Tw.bg_color Tw.emerald_700
+    , Tw.font_bold
     ]
 
 
@@ -88,8 +108,8 @@ navBar settings =
         ]
 
 
-bodyStyle : List Css.Style
-bodyStyle =
+bodyStyle : String -> List Css.Style
+bodyStyle bgUrl =
     [ Tw.absolute
     , Tw.inset_0
     , Tw.box_border
@@ -98,6 +118,7 @@ bodyStyle =
     , Tw.flex
     , Tw.flex_col
     , Tw.overflow_auto
+    , Tw.text_color Tw.white
     ]
 
 
@@ -106,18 +127,39 @@ innerStyle =
     [ Tw.p_3
     , Tw.flex_1
     , Tw.h_auto
+    , Tw.flex
+    , Tw.flex_col
+    , Tw.items_center
+    ]
+
+
+backgroundImageStyle : String -> List Css.Style
+backgroundImageStyle bgUrl =
+    [ Css.backgroundImage (url bgUrl)
+    , Tw.bg_cover
+    , Tw.bg_center
+    , Tw.bg_no_repeat
+    , Css.property "filter" "blur(2px)"
+    , Tw.fixed
+    , Tw.inset_0
+    , Tw.box_border
+    , Tw.h_full
+    , Tw.w_full
+    , Css.property "transform" "scale(1.1)"
+    , Css.property "z-index" "-1"
     ]
 
 
 body :
     { titles : List String
     , content : List (Html msg)
+    , background : String
     }
     -> List (Html.Html msg)
 body settings =
     [ Html.Styled.toUnstyled <|
-        div [ css bodyStyle ]
+        div [ css (bodyStyle settings.background) ]
             [ navBar { titles = settings.titles }
-            , div [ css innerStyle ] settings.content
+            , div [ css innerStyle ] (div [ css (backgroundImageStyle settings.background) ] [] :: settings.content)
             ]
     ]
