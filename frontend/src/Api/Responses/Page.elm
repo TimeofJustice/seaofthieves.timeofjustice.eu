@@ -27,8 +27,8 @@ decodeRoute string =
         "/events/burning-blade/calculator" ->
             Decode.succeed Route.Path.Events_BurningBlade_Calculator
 
-        "/fish" ->
-            Decode.succeed Route.Path.Fish
+        "/wiki" ->
+            Decode.succeed (Route.Path.Wiki_EntryName_ { entryName = "" })
 
         "/events/burning-blade" ->
             Decode.succeed (Route.Path.Events_EventName_ { eventName = "burning-blade" })

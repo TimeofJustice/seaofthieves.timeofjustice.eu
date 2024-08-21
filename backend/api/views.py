@@ -68,8 +68,8 @@ def module_to_dict(module):
         return {
             'type': 'text',
             'value': {
-            'title': module.title,
-            'content': module.content
+                'title': module.title,
+                'content': module.content
             }
         }
     elif module.type == 'block':
