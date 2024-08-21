@@ -30,6 +30,18 @@ def visit_page(request):
 
 # Create your views here.
 def burning_blade(request):
+    pages = Page.objects.all()
+
+    most_viewed = sorted(pages, key=lambda x: x.views, reverse=True)
+    most_viewed = most_viewed[:5]
+
+    popular = []
+    for page in most_viewed:
+        popular.append({
+            'title': page.title,
+            'route': page.path,
+        })
+
     return to_response(True, {
         'title': 'Burning Blade (Calculator)',
         'description': '',
@@ -42,12 +54,7 @@ def burning_blade(request):
             'grade4': 2,
             'grade5': 2.5,
         },
-        'popular': [
-            {
-                'title': 'Home',
-                'route': "/",
-            }
-        ],
+        'popular': popular,
         'more': [
             {
                 'title': 'Burning Blade (World Event)',

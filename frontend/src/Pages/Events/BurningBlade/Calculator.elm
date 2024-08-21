@@ -1,6 +1,7 @@
 module Pages.Events.BurningBlade.Calculator exposing (Model, Msg, page)
 
 import Api.Requests.BurningCalculator
+import Api.Requests.Visit
 import Api.Responses.BurningCalculator
 import Auth
 import Components
@@ -19,9 +20,9 @@ import View exposing (View)
 
 
 page : Shared.Model -> Route () -> Page Model Msg
-page _ _ =
+page _ route =
     Page.new
-        { init = init
+        { init = \_ -> init route
         , update = update
         , subscriptions = \_ -> Sub.none
         , view = view
@@ -34,21 +35,30 @@ type alias Model =
     }
 
 
-init : () -> ( Model, Effect Msg )
-init _ =
+init : Route () -> ( Model, Effect Msg )
+init route =
     ( { rituals = Nothing, pageInfo = Loading }
-    , Effect.sendCmd (Api.Requests.BurningCalculator.get { msg = ReceivedPageInfoResponse })
+    , Effect.batch
+        [ Effect.sendCmd (Api.Requests.BurningCalculator.get { msg = ReceivedPageInfoResponse })
+        , Effect.sendCmd (Api.Requests.Visit.get { path = route.path, msg = NoOp })
+        ]
     )
 
 
 type Msg
-    = ChangeRituals String
+    = NoOp
+    | ChangeRituals String
     | ReceivedPageInfoResponse (Result Http.Error (Result Api.Requests.BurningCalculator.Error Api.Responses.BurningCalculator.PageInfo))
 
 
 update : Msg -> Model -> ( Model, Effect Msg )
 update msg model =
     case msg of
+        NoOp ->
+            ( model
+            , Effect.none
+            )
+
         ChangeRituals rituals ->
             let
                 maybeRituals =

@@ -1,6 +1,7 @@
 module Pages.Home_ exposing (Model, Msg, page)
 
 import Api.Requests.BurningCalculator
+import Api.Requests.Visit
 import Api.Responses.BurningCalculator
 import Auth
 import Components
@@ -19,9 +20,9 @@ import View exposing (View)
 
 
 page : Shared.Model -> Route () -> Page Model Msg
-page _ _ =
+page _ route =
     Page.new
-        { init = init
+        { init = \_ -> init route
         , update = update
         , subscriptions = \_ -> Sub.none
         , view = view
@@ -32,10 +33,15 @@ type alias Model =
     {}
 
 
-init : () -> ( Model, Effect Msg )
-init _ =
+init : Route () -> ( Model, Effect Msg )
+init route =
     ( {}
-    , Effect.none
+    , Effect.sendCmd
+        (Api.Requests.Visit.get
+            { path = route.path
+            , msg = NoOp
+            }
+        )
     )
 
 
