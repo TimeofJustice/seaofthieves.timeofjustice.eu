@@ -61,3 +61,11 @@ def burning_blade(request):
             }
         ]
         })
+
+
+def wiki_page(request, page):
+    return to_response(True, {
+        'title': "Fish",
+        'modules': [],
+        'more': []
+    })
