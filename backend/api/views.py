@@ -90,7 +90,7 @@ def module_to_dict(module):
     elif module.type == 'table':
         columns = []
         for column in module.columns.all():
-            columns.append(column.name)
+            columns.append(column.title)
 
         rows = []
         for row in module.rows.all():
@@ -102,6 +102,7 @@ def module_to_dict(module):
         return {
             'type': 'table',
             'value': {
+                'title': module.title,
                 'columns': columns,
                 'rows': rows
             }
