@@ -68,9 +68,8 @@ def wiki_page(request, page):
         'title': "Fish",
         'modules': [
             {
-                'type': 'text',
+                'type': 'block',
                 'value': { 
-                    'title': 'Fish',
                     'content': 'Fish are a type of food in Sea of Thieves. \n They can be caught with a fishing rod and cooked to restore health.' 
                     }
             },
