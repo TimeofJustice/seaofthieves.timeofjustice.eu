@@ -1,4 +1,4 @@
-module Components exposing (body, container, textInput)
+module Components exposing (body, container, textInput, titleDiv)
 
 import Css exposing (url)
 import Html
@@ -50,26 +50,85 @@ textInput settings =
         ]
 
 
+titleStyle : List Css.Style
+titleStyle =
+    [ Tw.text_2xl
+    , Tw.font_bold
+    , Tw.mb_2
+    ]
+
+
+titleDiv : String -> Html msg
+titleDiv title =
+    div [ css titleStyle ] [ text title ]
+
+
 containerStyle : List Css.Style
 containerStyle =
-    [ Tw.bg_color Tw.teal_900
-    , Tw.bg_opacity_75
-    , Tw.backdrop_blur_3xl
-    , Tw.flex_1
+    [ Tw.flex_1
     , Tw.h_auto
-    , Tw.p_10
     , Tw.w_full
     , Tw.max_w_6xl
     , Tw.rounded
     , Tw.border_1
     , Tw.border_solid
     , Tw.border_color Tw.emerald_700
+    , Tw.flex
     ]
 
 
-container : List (Html msg) -> Html msg
-container content =
-    div [ css containerStyle ] content
+containerInnerStyle : List Css.Style
+containerInnerStyle =
+    [ Tw.bg_color Tw.teal_900
+    , Tw.bg_opacity_75
+    , Tw.box_border
+    , Tw.h_full
+    , Tw.flex_1
+    , Tw.p_10
+    , Css.property "backdrop-filter" "blur(8px)"
+    ]
+
+
+containerPopularStyle : List Css.Style
+containerPopularStyle =
+    [ Tw.bg_color Tw.teal_900
+    , Tw.box_border
+    , Tw.h_full
+    , Tw.p_5
+    , Tw.pt_10
+    , Tw.w_48
+    ]
+
+
+popularTitleStyle : List Css.Style
+popularTitleStyle =
+    [ Tw.font_bold
+    , Tw.mb_2
+    ]
+
+
+popularStyle : List Css.Style
+popularStyle =
+    [ Tw.text_color Tw.amber_400
+    , Tw.font_bold
+    , Tw.bg_color Tw.teal_800
+    , Tw.p_2
+    , Tw.w_full
+    , Tw.box_border
+    ]
+
+
+container : { content : List (Html msg), popular : List String } -> Html msg
+container settings =
+    div [ css containerStyle ]
+        [ div [ css containerInnerStyle ] settings.content
+        , case settings.popular of
+            [] ->
+                text ""
+
+            _ ->
+                div [ css containerPopularStyle ] (div [ css popularTitleStyle ] [ text "Popular" ] :: List.map (\title -> div [ css popularStyle ] [ text title ]) settings.popular)
+        ]
 
 
 navBarStyle : List Css.Style

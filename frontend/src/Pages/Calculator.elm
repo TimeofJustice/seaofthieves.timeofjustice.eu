@@ -77,38 +77,42 @@ view model =
 bodyView : Model -> Html Msg
 bodyView model =
     Components.container
-        [ Components.textInput
-            { label = "Anzahl der Rituale"
-            , onInput = ChangeRituals
-            , value =
-                case model.rituals of
-                    Just rituals ->
-                        String.fromInt rituals
+        { content =
+            [ Components.titleDiv "Burning Blade"
+            , Components.textInput
+                { label = "Anzahl der Rituale"
+                , onInput = ChangeRituals
+                , value =
+                    case model.rituals of
+                        Just rituals ->
+                            String.fromInt rituals
 
-                    Nothing ->
-                        ""
-            }
-        , table [ css [ Tw.p_3 ] ]
-            [ thead []
-                [ tr []
-                    [ th [] [ text "Stufe I" ]
-                    , th [] [ text "Stufe II" ]
-                    , th [] [ text "Stufe III" ]
-                    , th [] [ text "Stufe IV" ]
-                    , th [] [ text "Stufe V" ]
+                        Nothing ->
+                            ""
+                }
+            , table [ css [ Tw.p_3 ] ]
+                [ thead []
+                    [ tr []
+                        [ th [] [ text "Stufe I" ]
+                        , th [] [ text "Stufe II" ]
+                        , th [] [ text "Stufe III" ]
+                        , th [] [ text "Stufe IV" ]
+                        , th [] [ text "Stufe V" ]
+                        ]
                     ]
-                ]
-            , tbody []
-                [ tr []
-                    [ td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.0) ++ " Gold") ]
-                    , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.33) ++ " Gold") ]
-                    , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.67) ++ " Gold") ]
-                    , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 2) ++ " Gold") ]
-                    , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 2.5) ++ " Gold") ]
+                , tbody []
+                    [ tr []
+                        [ td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.0) ++ " Gold") ]
+                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.33) ++ " Gold") ]
+                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.67) ++ " Gold") ]
+                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 2) ++ " Gold") ]
+                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 2.5) ++ " Gold") ]
+                        ]
                     ]
                 ]
             ]
-        ]
+        , popular = [ "Test" ]
+        }
 
 
 calcGold : Maybe Int -> Float -> Float
