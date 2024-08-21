@@ -1,4 +1,4 @@
-name: Elm Land Deployment
+name: Elm Land Deployment (Beta)
 
 on:
   push:

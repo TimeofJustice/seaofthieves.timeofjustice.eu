@@ -1,4 +1,4 @@
-name: Django Deployment
+name: Django Deployment (Beta)
 
 on:
   push:
