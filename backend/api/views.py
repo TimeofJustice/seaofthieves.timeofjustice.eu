@@ -9,6 +9,24 @@ def to_response(was_successful, data, message=''):
         return JsonResponse({'status': message}, status=400)
     
 
+def visit_page(request):
+    get = request.GET
+    path = get.get('path', '')
+
+    if path == '':
+        return to_response(False, {}, 'missing_parameters')
+    
+    page = Page.objects.filter(path=path).first()
+
+    if page is None:
+        return to_response(False, {}, 'not_found')
+    
+    page.views += 1
+    page.save()
+
+    return to_response(True, {'views': page.views})
+    
+
 # Create your views here.
 def burning_blade(request):
     return to_response(True, {
