@@ -76,6 +76,7 @@ containerStyle =
     , Tw.border_solid
     , Tw.border_color Tw.emerald_700
     , Tw.flex
+    , Tw.overflow_hidden
     ]
 
 
