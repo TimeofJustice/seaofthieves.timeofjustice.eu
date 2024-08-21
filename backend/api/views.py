@@ -63,36 +63,26 @@ def burning_blade(request):
         })
 
 
+def wiki_to_dict(wiki):
+    more = []
+
+    for page in wiki.more.all():
+        more.append({
+            'title': page.title,
+            'route': page.path,
+        })
+
+    return {
+        'title': wiki.title,
+        'modules': wiki.modules,
+        'more': more
+    }
+
+
 def wiki_page(request, page):
-    return to_response(True, {
-        'title': "Fish",
-        'modules': [
-            {
-                'type': 'block',
-                'value': { 
-                    'content': 'Fish are a type of food in Sea of Thieves. \n They can be caught with a fishing rod and cooked to restore health.' 
-                    }
-            },
-            {
-                'type': 'image',
-                'value': { 
-                    'description': 'Fish',
-                    'url': 'https://seaofthieves.gamepedia.com/media/seaofthieves.gamepedia.com/thumb/1/1e/Fish.png/200px-Fish.png?version=7b5c1f3c4b6b8f6c2b5d0'
-                    }
-            },
-            {
-                'type': 'table',
-                'value': {
-                    'title': 'Fish Prices',
-                    'columns': ['Fish', 'Sell Price'],
-                    'rows': [
-                        [
-                            {'type': 'text', 'value': 'Splashtail'}, 
-                            {'type': 'gold', 'value': 10}
-                            ]
-                    ]
-                }
-            }
-        ],
-        'more': []
-    })
+    wiki = Wiki.objects.filter(title=page).first()
+
+    if wiki is None:
+        return to_response(False, {}, 'not_found')
+    
+    return to_response(True, wiki_to_dict(wiki))
