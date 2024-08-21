@@ -12,7 +12,7 @@ def to_response(was_successful, data, message=''):
 # Create your views here.
 def burning_blade(request):
     return to_response(True, {
-        'title': 'Burning Blade (World Event)',
+        'title': 'Burning Blade (Calculator)',
         'description': '',
         'baseValue': 14000,
         'ritualValue': 26000,
@@ -27,6 +27,12 @@ def burning_blade(request):
             {
                 'title': 'Home',
                 'route': "/",
+            }
+        ],
+        'more': [
+            {
+                'title': 'Burning Blade (World Event)',
+                'route': '/events/burning-blade',
             }
         ]
         })
