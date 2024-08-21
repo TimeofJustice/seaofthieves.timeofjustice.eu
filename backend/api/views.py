@@ -63,6 +63,64 @@ def burning_blade(request):
         })
 
 
+def module_to_dict(module):
+    if module.type == 'text':
+        return {
+            'type': 'text',
+            'value': {
+            'title': module.title,
+            'content': module.content
+            }
+        }
+    elif module.type == 'block':
+        return {
+            'type': 'block',
+            'value': {
+                'content': module.content
+            }
+        }
+    elif module.type == 'image':
+        return {
+            'type': 'image',
+            'value': {
+                'description': module.description,
+                'path': module.path
+            }
+        }
+    elif module.type == 'table':
+        columns = []
+        for column in module.columns.all():
+            columns.append(column.name)
+
+        rows = []
+        for row in module.rows.all():
+            row_columns = []
+            for column in row.columns.all():
+                row_columns.append(row_to_dict(column))
+            rows.append(row_columns)
+
+        return {
+            'type': 'table',
+            'value': {
+                'columns': columns,
+                'rows': rows
+            }
+        }
+    
+
+def row_to_dict(row):
+    if row.type == 'text':
+        return {
+            'type': 'text',
+            'value': row.title
+        }
+    elif row.type == 'gold':
+        return {
+            'type': 'gold',
+            'value': row.amount
+        }
+
+
 def wiki_to_dict(wiki):
     more = []
 
@@ -72,9 +130,14 @@ def wiki_to_dict(wiki):
             'route': page.path,
         })
 
+    modules = []
+
+    for module in wiki.modules.all():
+        modules.append(module_to_dict(module))
+
     return {
         'title': wiki.title,
-        'modules': wiki.modules,
+        'modules': modules,
         'more': more
     }
 

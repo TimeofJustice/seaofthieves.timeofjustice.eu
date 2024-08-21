@@ -26,6 +26,7 @@ class Column(models.Model):
     id = models.AutoField(primary_key=True)
     type = models.CharField(max_length=255, choices=CELL_TYPE_CHOICES, default="text")
     title = models.CharField(max_length=255, blank=True, null=True)
+    amount = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return str(self.id)
