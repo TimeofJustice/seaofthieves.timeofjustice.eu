@@ -12,8 +12,8 @@ def to_response(was_successful, data, message=''):
 # Create your views here.
 def burning_blade(request):
     return to_response(True, {
-        'title': 'Hello, World!',
-        'description': 'Welcome to the Burning Blade API!',
+        'title': 'Burning Blade (World Event)',
+        'description': '',
         'baseValue': 14000,
         'ritualValue': 26000,
         'emissaryValues': {
@@ -23,5 +23,10 @@ def burning_blade(request):
             'grade4': 2,
             'grade5': 2.5,
         },
-        'popular': []
+        'popular': [
+            {
+                'title': 'Home',
+                'route': "/",
+            }
+        ]
         })
