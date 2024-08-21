@@ -80,7 +80,7 @@ def wiki_to_dict(wiki):
 
 
 def wiki_page(request, page):
-    wiki = Wiki.objects.filter(title=page).first()
+    wiki = Wiki.objects.filter(title__iexact=page).first()
 
     if wiki is None:
         return to_response(False, {}, 'not_found')
