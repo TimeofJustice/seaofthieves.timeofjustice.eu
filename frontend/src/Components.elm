@@ -1,4 +1,4 @@
-module Components exposing (body, container, textInput, titleDiv)
+module Components exposing (body, container, textInput, titleDiv, errorView, loadingView)
 
 import Api.Page
 import Css exposing (url)
@@ -11,6 +11,7 @@ import Tailwind.Color
 import Tailwind.Extra as Tw
 import Tailwind.Theme as Tw
 import Tailwind.Utilities as Tw
+import Icons
 
 
 inputLabel : List Css.Style
@@ -131,6 +132,37 @@ container settings =
             _ ->
                 div [ css containerPopularStyle ] (div [ css popularTitleStyle ] [ text "Popular" ] :: List.map (\page -> a [ css [ Tw.no_underline ], fromUnstyled (Route.Path.href page.route) ] [ div [ css popularStyle ] [ text page.title ] ]) settings.popular)
         ]
+
+
+loadingStyle : List Css.Style
+loadingStyle =
+    [ Tw.items_center
+    , Tw.space_x_1
+    , Tw.justify_center
+    , Tw.flex
+    , Tw.w_full
+    , Tw.fill_color Tw.white
+    ]
+
+
+loadingView : Html msg
+loadingView =
+    div [ css loadingStyle ]
+        [ Icons.loading
+        , div [] [ text "Lade..." ]
+        ]
+
+
+errorTextStyle : List Css.Style
+errorTextStyle =
+    [ Tw.font_bold
+    , Tw.text_color Tw.red_500
+    ]
+
+
+errorView : String -> Html msg
+errorView message =
+    div [ css errorTextStyle ] [ text message ]
 
 
 navBarStyle : List Css.Style

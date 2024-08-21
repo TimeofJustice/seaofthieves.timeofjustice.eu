@@ -1,12 +1,16 @@
 module Pages.Calculator exposing (Model, Msg, page)
 
+import Api.Requests.BurningBlade
+import Api.WorldEvents.BurningBlade
 import Auth
 import Components
 import Effect exposing (Effect)
 import Html.Styled exposing (Html, div, table, tbody, td, text, th, thead, tr)
 import Html.Styled.Attributes exposing (css)
 import Http
+import Http.Extra
 import Page exposing (Page)
+import ResponseData exposing (ResponseData(..))
 import Route exposing (Route)
 import Route.Path
 import Shared
@@ -26,18 +30,20 @@ page _ _ =
 
 type alias Model =
     { rituals : Maybe Int
+    , pageInfo : ResponseData Api.WorldEvents.BurningBlade.PageInfo
     }
 
 
 init : () -> ( Model, Effect Msg )
 init _ =
-    ( { rituals = Nothing }
-    , Effect.none
+    ( { rituals = Nothing, pageInfo = Loading }
+    , Effect.sendCmd (Api.Requests.BurningBlade.get { msg = ReceivedPageInfoResponse })
     )
 
 
 type Msg
     = ChangeRituals String
+    | ReceivedPageInfoResponse (Result Http.Error (Result Api.Requests.BurningBlade.Error Api.WorldEvents.BurningBlade.PageInfo))
 
 
 update : Msg -> Model -> ( Model, Effect Msg )
@@ -61,6 +67,23 @@ update msg model =
             , Effect.none
             )
 
+        ReceivedPageInfoResponse result ->
+            case result of
+                Ok (Ok pageInfo) ->
+                    ( { model | pageInfo = Success pageInfo }
+                    , Effect.none
+                    )
+
+                Ok (Err error) ->
+                    ( { model | pageInfo = Error (Api.Requests.BurningBlade.errorToString error) }
+                    , Effect.none
+                    )
+
+                Err error ->
+                    ( { model | pageInfo = Error (Http.Extra.errorToString error) }
+                    , Effect.none
+                    )
+
 
 view : Model -> View Msg
 view model =
@@ -78,41 +101,60 @@ bodyView : Model -> Html Msg
 bodyView model =
     Components.container
         { content =
-            [ Components.titleDiv "Burning Blade"
-            , Components.textInput
-                { label = "Anzahl der Rituale"
-                , onInput = ChangeRituals
-                , value =
-                    case model.rituals of
-                        Just rituals ->
-                            String.fromInt rituals
+            case model.pageInfo of
+                Success pageInfo ->
+                    pageView pageInfo model.rituals
 
-                        Nothing ->
-                            ""
-                }
-            , table [ css [ Tw.p_3 ] ]
-                [ thead []
-                    [ tr []
-                        [ th [] [ text "Stufe I" ]
-                        , th [] [ text "Stufe II" ]
-                        , th [] [ text "Stufe III" ]
-                        , th [] [ text "Stufe IV" ]
-                        , th [] [ text "Stufe V" ]
-                        ]
-                    ]
-                , tbody []
-                    [ tr []
-                        [ td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.0) ++ " Gold") ]
-                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.33) ++ " Gold") ]
-                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 1.67) ++ " Gold") ]
-                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 2) ++ " Gold") ]
-                        , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold model.rituals 2.5) ++ " Gold") ]
-                        ]
-                    ]
+                Error error ->
+                    [ Components.errorView error ]
+
+                _ ->
+                    [ Components.loadingView ]
+        , popular =
+            case model.pageInfo of
+                Success pageInfo ->
+                    pageInfo.popular
+
+                _ ->
+                    [ { title = "Home", route = Route.Path.Home_ } ]
+        }
+
+
+pageView : Api.WorldEvents.BurningBlade.PageInfo -> Maybe Int -> List (Html Msg)
+pageView pageInfo rituals =
+    [ Components.titleDiv pageInfo.title
+    , Components.textInput
+        { label = "Amount of Rituals"
+        , onInput = ChangeRituals
+        , value =
+            case rituals of
+                Just amount ->
+                    String.fromInt amount
+
+                Nothing ->
+                    ""
+        }
+    , table [ css [ Tw.p_3 ] ]
+        [ thead []
+            [ tr []
+                [ th [] [ text "Grade I" ]
+                , th [] [ text "Grade II" ]
+                , th [] [ text "Grade III" ]
+                , th [] [ text "Grade IV" ]
+                , th [] [ text "Grade V" ]
                 ]
             ]
-        , popular = [ { title = "Fish", route = Route.Path.Fish } ]
-        }
+        , tbody []
+            [ tr []
+                [ td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold rituals pageInfo.emissaryValues.grade1) ++ " Gold") ]
+                , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold rituals pageInfo.emissaryValues.grade2) ++ " Gold") ]
+                , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold rituals pageInfo.emissaryValues.grade3) ++ " Gold") ]
+                , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold rituals pageInfo.emissaryValues.grade4) ++ " Gold") ]
+                , td [ css [ Tw.p_3 ] ] [ text (String.fromFloat (calcGold rituals pageInfo.emissaryValues.grade5) ++ " Gold") ]
+                ]
+            ]
+        ]
+    ]
 
 
 calcGold : Maybe Int -> Float -> Float
