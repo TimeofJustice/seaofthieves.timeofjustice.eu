@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
+from .models import Page
 
 
 def to_response(was_successful, data, message=''):
