@@ -28,7 +28,7 @@ class Column(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
     
 
 class Row(models.Model):
@@ -36,7 +36,7 @@ class Row(models.Model):
     columns = models.ManyToManyField(Column, blank=True, null=True)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 class Module(models.Model):
     id = models.AutoField(primary_key=True)
@@ -49,7 +49,7 @@ class Module(models.Model):
     rows = models.ManyToManyField(Row, blank=True, null=True)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class Wiki(models.Model):
