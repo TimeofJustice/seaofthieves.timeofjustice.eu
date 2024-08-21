@@ -66,5 +66,5 @@ subscriptions model =
 view : Model -> View Msg
 view model =
     { title = "Pages.Fish"
-    , body = [ Html.text "/fish" ]
+    , body = [ Html.text "/fishe" ]
     }
