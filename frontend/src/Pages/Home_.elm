@@ -1,8 +1,7 @@
 module Pages.Home_ exposing (Model, Msg, page)
 
-import Api.Requests.BurningCalculator
 import Api.Requests.Visit
-import Api.Responses.BurningCalculator
+import Api.Responses.Visit
 import Auth
 import Components
 import Effect exposing (Effect)
@@ -30,32 +29,45 @@ page _ route =
 
 
 type alias Model =
-    {}
+    { visitInfo : ResponseData Api.Responses.Visit.VisitInfo
+    }
 
 
 init : Route () -> ( Model, Effect Msg )
 init route =
-    ( {}
+    ( { visitInfo = Loading }
     , Effect.sendCmd
         (Api.Requests.Visit.get
             { path = route.path
-            , msg = NoOp
+            , msg = ReceivedVisitResponse
             }
         )
     )
 
 
 type Msg
-    = NoOp
+    = ReceivedVisitResponse (Result Http.Error (Result Api.Requests.Visit.Error Api.Responses.Visit.VisitInfo))
 
 
 update : Msg -> Model -> ( Model, Effect Msg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model
-            , Effect.none
-            )
+        ReceivedVisitResponse result ->
+            case result of
+                Ok (Ok pageInfo) ->
+                    ( { model | visitInfo = Success pageInfo }
+                    , Effect.none
+                    )
+
+                Ok (Err error) ->
+                    ( { model | visitInfo = Error (Api.Requests.Visit.errorToString error) }
+                    , Effect.none
+                    )
+
+                Err error ->
+                    ( { model | visitInfo = Error (Http.Extra.errorToString error) }
+                    , Effect.none
+                    )
 
 
 view : Model -> View Msg
@@ -74,6 +86,12 @@ bodyView : Model -> Html Msg
 bodyView model =
     Components.container
         { content = [ Components.titleDiv "Sea of Thieves Wiki" ]
-        , popular = [ { title = "Burning Blade (Calculator)", route = Route.Path.Events_BurningBlade_Calculator } ]
+        , popular =
+            case model.visitInfo of
+                Success pageInfo ->
+                    pageInfo.popular
+
+                _ ->
+                    []
         , more = []
         }

@@ -3,6 +3,7 @@ module Pages.Events.BurningBlade.Calculator exposing (Model, Msg, page)
 import Api.Requests.BurningCalculator
 import Api.Requests.Visit
 import Api.Responses.BurningCalculator
+import Api.Responses.Visit
 import Auth
 import Components
 import Effect exposing (Effect)
@@ -30,23 +31,24 @@ page _ route =
 
 
 type alias Model =
-    { rituals : Maybe Int
+    { visitInfo : ResponseData Api.Responses.Visit.VisitInfo
+    , rituals : Maybe Int
     , pageInfo : ResponseData Api.Responses.BurningCalculator.PageInfo
     }
 
 
 init : Route () -> ( Model, Effect Msg )
 init route =
-    ( { rituals = Nothing, pageInfo = Loading }
+    ( { visitInfo = Loading, rituals = Nothing, pageInfo = Loading }
     , Effect.batch
         [ Effect.sendCmd (Api.Requests.BurningCalculator.get { msg = ReceivedPageInfoResponse })
-        , Effect.sendCmd (Api.Requests.Visit.get { path = route.path, msg = NoOp })
+        , Effect.sendCmd (Api.Requests.Visit.get { path = route.path, msg = ReceivedVisitResponse })
         ]
     )
 
 
 type Msg
-    = NoOp
+    = ReceivedVisitResponse (Result Http.Error (Result Api.Requests.Visit.Error Api.Responses.Visit.VisitInfo))
     | ChangeRituals String
     | ReceivedPageInfoResponse (Result Http.Error (Result Api.Requests.BurningCalculator.Error Api.Responses.BurningCalculator.PageInfo))
 
@@ -54,10 +56,22 @@ type Msg
 update : Msg -> Model -> ( Model, Effect Msg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model
-            , Effect.none
-            )
+        ReceivedVisitResponse result ->
+            case result of
+                Ok (Ok pageInfo) ->
+                    ( { model | visitInfo = Success pageInfo }
+                    , Effect.none
+                    )
+
+                Ok (Err error) ->
+                    ( { model | visitInfo = Error (Api.Requests.Visit.errorToString error) }
+                    , Effect.none
+                    )
+
+                Err error ->
+                    ( { model | visitInfo = Error (Http.Extra.errorToString error) }
+                    , Effect.none
+                    )
 
         ChangeRituals rituals ->
             let
@@ -121,7 +135,7 @@ bodyView model =
                 _ ->
                     [ Components.loadingView ]
         , popular =
-            case model.pageInfo of
+            case model.visitInfo of
                 Success pageInfo ->
                     pageInfo.popular
 

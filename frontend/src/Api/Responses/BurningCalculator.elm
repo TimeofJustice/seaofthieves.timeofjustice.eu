@@ -11,7 +11,6 @@ type alias PageInfo =
     , baseValue : Int
     , ritualValue : Int
     , emissaryValues : EmissaryValues
-    , popular : List Api.Responses.Page.Page
     , more : List Api.Responses.Page.Page
     }
 
@@ -43,5 +42,4 @@ decode =
         |> Decode.andMap (Decode.field "baseValue" Decode.int)
         |> Decode.andMap (Decode.field "ritualValue" Decode.int)
         |> Decode.andMap (Decode.field "emissaryValues" decodeEmissaryValues)
-        |> Decode.andMap (Decode.field "popular" (Decode.list Api.Responses.Page.decode))
         |> Decode.andMap (Decode.field "more" (Decode.list Api.Responses.Page.decode))
