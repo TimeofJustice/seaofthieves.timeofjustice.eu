@@ -3,4 +3,4 @@ module Env exposing (baseUrl)
 
 baseUrl : String
 baseUrl =
-    "https://seaofthieves.timeofjustice.eu/api"
+    "https://seaofthievesbeta.timeofjustice.eu/api"
