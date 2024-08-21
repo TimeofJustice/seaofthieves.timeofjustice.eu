@@ -1,12 +1,16 @@
-module Pages.Home_ exposing (page, Model, Msg)
+module Pages.Home_ exposing (Model, Msg, page)
 
+import Api.Requests.BurningCalculator
+import Api.Responses.BurningCalculator
 import Auth
 import Components
 import Effect exposing (Effect)
-import Html.Styled exposing (Html, div, text)
+import Html.Styled exposing (Html, div, table, tbody, td, text, th, thead, tr)
 import Html.Styled.Attributes exposing (css)
 import Http
+import Http.Extra
 import Page exposing (Page)
+import ResponseData exposing (ResponseData(..))
 import Route exposing (Route)
 import Route.Path
 import Shared
@@ -30,7 +34,9 @@ type alias Model =
 
 init : () -> ( Model, Effect Msg )
 init _ =
-    ( {}, Effect.none )
+    ( {}
+    , Effect.none
+    )
 
 
 type Msg
@@ -41,12 +47,14 @@ update : Msg -> Model -> ( Model, Effect Msg )
 update msg model =
     case msg of
         NoOp ->
-            ( model, Effect.none )
+            ( model
+            , Effect.none
+            )
 
 
 view : Model -> View Msg
 view model =
-    { title = "Home - Sea of Thieves"
+    { title = "Home - SeaofThieves"
     , body =
         Components.body
             { titles = [ "Home" ]
@@ -58,7 +66,8 @@ view model =
 
 bodyView : Model -> Html Msg
 bodyView model =
-    div []
-        [ div [ css [ Tw.flex, Tw.justify_center, Tw.items_center, Tw.h_full ] ]
-            [ text "Home" ]
-        ]
+    Components.container
+        { content = [ Components.titleDiv "Sea of Thieves Wiki" ]
+        , popular = [ { title = "Burning Blade (Calculator)", route = Route.Path.Events_BurningBlade_Calculator } ]
+        , more = []
+        }

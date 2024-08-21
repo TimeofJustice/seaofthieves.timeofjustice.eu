@@ -1,7 +1,7 @@
-module Pages.Calculator exposing (Model, Msg, page)
+module Pages.Events.BurningBlade.Calculator exposing (Model, Msg, page)
 
-import Api.Requests.BurningBlade
-import Api.WorldEvents.BurningBlade
+import Api.Requests.BurningCalculator
+import Api.Responses.BurningCalculator
 import Auth
 import Components
 import Effect exposing (Effect)
@@ -30,20 +30,20 @@ page _ _ =
 
 type alias Model =
     { rituals : Maybe Int
-    , pageInfo : ResponseData Api.WorldEvents.BurningBlade.PageInfo
+    , pageInfo : ResponseData Api.Responses.BurningCalculator.PageInfo
     }
 
 
 init : () -> ( Model, Effect Msg )
 init _ =
     ( { rituals = Nothing, pageInfo = Loading }
-    , Effect.sendCmd (Api.Requests.BurningBlade.get { msg = ReceivedPageInfoResponse })
+    , Effect.sendCmd (Api.Requests.BurningCalculator.get { msg = ReceivedPageInfoResponse })
     )
 
 
 type Msg
     = ChangeRituals String
-    | ReceivedPageInfoResponse (Result Http.Error (Result Api.Requests.BurningBlade.Error Api.WorldEvents.BurningBlade.PageInfo))
+    | ReceivedPageInfoResponse (Result Http.Error (Result Api.Requests.BurningCalculator.Error Api.Responses.BurningCalculator.PageInfo))
 
 
 update : Msg -> Model -> ( Model, Effect Msg )
@@ -75,7 +75,7 @@ update msg model =
                     )
 
                 Ok (Err error) ->
-                    ( { model | pageInfo = Error (Api.Requests.BurningBlade.errorToString error) }
+                    ( { model | pageInfo = Error (Api.Requests.BurningCalculator.errorToString error) }
                     , Effect.none
                     )
 
@@ -87,10 +87,10 @@ update msg model =
 
 view : Model -> View Msg
 view model =
-    { title = "Calculator - SeaofThieves"
+    { title = "BB-Calculator - SeaofThieves"
     , body =
         Components.body
-            { titles = [ "Burning Blade" ]
+            { titles = [ "Events", "Burning Blade", "Calculator" ]
             , content = [ bodyView model ]
             , background = "https://timeofjustice.eu/global/background/sea-of-thieves-sinking-the-burning-blade.webp"
             }
@@ -117,10 +117,17 @@ bodyView model =
 
                 _ ->
                     [ { title = "Home", route = Route.Path.Home_ } ]
+        , more =
+            case model.pageInfo of
+                Success pageInfo ->
+                    pageInfo.more
+
+                _ ->
+                    []
         }
 
 
-pageView : Api.WorldEvents.BurningBlade.PageInfo -> Maybe Int -> List (Html Msg)
+pageView : Api.Responses.BurningCalculator.PageInfo -> Maybe Int -> List (Html Msg)
 pageView pageInfo rituals =
     [ Components.titleDiv pageInfo.title
     , Components.textInput

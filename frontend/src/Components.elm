@@ -1,17 +1,17 @@
-module Components exposing (body, container, textInput, titleDiv, errorView, loadingView)
+module Components exposing (body, container, errorView, loadingView, textInput, titleDiv)
 
-import Api.Page
+import Api.Responses.Page
 import Css exposing (url)
 import Html
-import Html.Styled exposing (Html, a, button, div, img, input, label, option, select, span, text, textarea)
+import Html.Styled exposing (Html, a, button, div, img, input, label, li, option, select, span, text, textarea)
 import Html.Styled.Attributes exposing (css, disabled, fromUnstyled, placeholder, readonly, rows, selected, src, type_, value)
 import Html.Styled.Events exposing (onBlur, onClick, onInput)
+import Icons
 import Route.Path exposing (Path)
 import Tailwind.Color
 import Tailwind.Extra as Tw
 import Tailwind.Theme as Tw
 import Tailwind.Utilities as Tw
-import Icons
 
 
 inputLabel : List Css.Style
@@ -99,7 +99,7 @@ containerPopularStyle =
     , Tw.h_full
     , Tw.p_5
     , Tw.pt_10
-    , Tw.w_48
+    , Tw.w_64
     ]
 
 
@@ -122,16 +122,57 @@ popularStyle =
     ]
 
 
-container : { content : List (Html msg), popular : List Api.Page.Page } -> Html msg
+popularView : Api.Responses.Page.Page -> Html msg
+popularView page =
+    a [ css [ Tw.no_underline ], fromUnstyled (Route.Path.href page.route) ]
+        [ div [ css popularStyle ] [ text page.title ]
+        ]
+
+
+linkStyle : List Css.Style
+linkStyle =
+    [ Tw.text_color Tw.amber_400
+    , Tw.cursor_pointer
+    , Tw.underline
+    , Tw.text_center
+    , Tw.transition_colors
+    , Css.hover [ Tw.text_color Tw.amber_600 ]
+    ]
+
+
+link : { label : String, href : Path } -> Html msg
+link settings =
+    a [ css linkStyle, fromUnstyled (Route.Path.href settings.href) ] [ text settings.label ]
+
+
+moreView : Api.Responses.Page.Page -> Html msg
+moreView page =
+    li [] [ link { label = page.title, href = page.route } ]
+
+
+container : { content : List (Html msg), popular : List Api.Responses.Page.Page, more : List Api.Responses.Page.Page } -> Html msg
 container settings =
     div [ css containerStyle ]
-        [ div [ css containerInnerStyle ] settings.content
+        [ div [ css containerInnerStyle ]
+            (settings.content
+                ++ [ case settings.more of
+                        [] ->
+                            text ""
+
+                        _ ->
+                            div []
+                                (div [ css popularTitleStyle ] [ text "More" ]
+                                    :: List.map moreView settings.more
+                                )
+                   ]
+            )
         , case settings.popular of
             [] ->
                 text ""
 
             _ ->
-                div [ css containerPopularStyle ] (div [ css popularTitleStyle ] [ text "Popular" ] :: List.map (\page -> a [ css [ Tw.no_underline ], fromUnstyled (Route.Path.href page.route) ] [ div [ css popularStyle ] [ text page.title ] ]) settings.popular)
+                div [ css containerPopularStyle ]
+                    (div [ css popularTitleStyle ] [ text "Popular" ] :: List.map popularView settings.popular)
         ]
 
 

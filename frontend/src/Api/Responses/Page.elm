@@ -1,4 +1,4 @@
-module Api.Page exposing (Page, decode)
+module Api.Responses.Page exposing (Page, decode)
 
 import Json.Decode as Decode
 import Json.Decode.Extra as Decode
@@ -24,11 +24,14 @@ decodeRoute string =
         "/" ->
             Decode.succeed Route.Path.Home_
 
-        "/calculator" ->
-            Decode.succeed Route.Path.Calculator
+        "/events/burning-blade/calculator" ->
+            Decode.succeed Route.Path.Events_BurningBlade_Calculator
 
         "/fish" ->
             Decode.succeed Route.Path.Fish
 
+        "/events/burning-blade" ->
+            Decode.succeed (Route.Path.Events_EventName_ { eventName = "burning-blade" })
+
         _ ->
-            Decode.fail ("Unknown route: " ++ string)
+            Decode.succeed Route.Path.Home_

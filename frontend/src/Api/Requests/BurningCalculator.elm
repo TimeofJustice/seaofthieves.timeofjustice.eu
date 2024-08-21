@@ -1,6 +1,6 @@
-module Api.Requests.BurningBlade exposing (Error, errorToString, get)
+module Api.Requests.BurningCalculator exposing (Error, errorToString, get)
 
-import Api.WorldEvents.BurningBlade exposing (PageInfo)
+import Api.Responses.BurningCalculator exposing (PageInfo)
 import Env
 import Http
 import Http.Extra as Http
@@ -14,7 +14,7 @@ get { msg } =
         , headers = []
         , url = Env.baseUrl ++ "/events/burning-blade"
         , body = Http.emptyBody
-        , expect = Http.expectStringResponse msg (Http.withError parseError Api.WorldEvents.BurningBlade.decode)
+        , expect = Http.expectStringResponse msg (Http.withError parseError Api.Responses.BurningCalculator.decode)
         , timeout = Just 5000
         , tracker = Nothing
         }
