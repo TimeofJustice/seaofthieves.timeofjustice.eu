@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from .models import Page, Wiki
+from .models import Page, Wiki, Module
 
 
 def to_response(was_successful, data, message=''):
@@ -83,21 +83,28 @@ def module_to_dict(module):
         return {
             'type': 'image',
             'value': {
-                'description': module.description,
+                'description': module.content,
                 'path': module.path
             }
         }
     elif module.type == 'table':
         columns = []
-        for column in module.columns.all():
-            columns.append(column.title)
+
+        if module.columns:
+            columns = module.columns.split(',')
+            columns = [column.strip() for column in columns]
 
         rows = []
-        for row in module.rows.all():
-            row_columns = []
-            for column in row.columns.all():
-                row_columns.append(row_to_dict(column))
-            rows.append(row_columns)
+
+        if module.rows:
+            # (type, value), (type, value), ...
+            rows_json = module.rows.split('),')
+            rows_json = [row.strip() for row in rows_json]
+            rows_json = [row[1:] if row.startswith('(') else row for row in rows_json]
+            rows_json = [row[:-1] if row.endswith(')') else row for row in rows_json]
+            rows_json = [row.split(',') for row in rows_json]
+            rows_json = [[value.strip() for value in row] for row in rows_json]
+            rows = [row_to_dict(row[0], row[1]) for row in rows_json]
 
         return {
             'type': 'table',
@@ -109,16 +116,18 @@ def module_to_dict(module):
         }
     
 
-def row_to_dict(row):
-    if row.type == 'text':
+def row_to_dict(type, value):
+    if type == 'text':
         return {
             'type': 'text',
-            'value': row.title
+            'value': value
         }
-    elif row.type == 'gold':
+    elif type == 'gold':
+        value = int(value)
+
         return {
             'type': 'gold',
-            'value': row.amount
+            'value': value
         }
 
 
@@ -133,7 +142,7 @@ def wiki_to_dict(wiki):
 
     modules = []
 
-    for module in wiki.modules.all():
+    for module in Module.objects.filter(wiki=wiki):
         modules.append(module_to_dict(module))
 
     return {
