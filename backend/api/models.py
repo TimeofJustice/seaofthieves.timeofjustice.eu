@@ -9,7 +9,10 @@ class Page(models.Model):
     views = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.title + ' (' + self.root + '/' + self.page + ')'
+        if self.page is None:
+            return self.title + ' (' + self.root + ')'
+        else:
+            return self.title + ' (' + self.root + '/' + self.page + ')'
 
 MODULE_TYPE_CHOICES = (
     ("text", "text"),
