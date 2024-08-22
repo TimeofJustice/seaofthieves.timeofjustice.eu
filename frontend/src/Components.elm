@@ -90,6 +90,7 @@ containerInnerStyle =
     , Tw.p_10
     , Css.property "backdrop-filter" "blur(8px)"
     , Tw.space_y_3
+
     -- , Css.property "border-radius" "0.2rem 0 0 0.15rem"
     , Tw.overflow_x_hidden
     , Tw.rounded_tl
@@ -118,21 +119,10 @@ popularTitleStyle =
     ]
 
 
-popularStyle : List Css.Style
-popularStyle =
-    [ Tw.text_color Tw.amber_400
-    , Tw.font_semibold
-    , Tw.p_2
-    , Tw.w_full
-    , Tw.box_border
-    , Css.hover [ Tw.bg_color Tw.teal_600 ]
-    ]
-
-
 popularView : Api.Responses.Page.Page -> Html msg
 popularView page =
     a [ css aStyle, fromUnstyled (Route.Path.href page.route) ]
-        [ div [ css popularStyle ] [ text page.title ]
+        [ div [ css listEntryStyle ] [ text page.title ]
         ]
 
 
@@ -157,15 +147,14 @@ moreView page =
     li [] [ link { label = page.title, href = page.route } ]
 
 
-chapterStyle : List Css.Style
-chapterStyle =
+listEntryStyle : List Css.Style
+listEntryStyle =
     [ Tw.text_color Tw.amber_400
     , Tw.font_semibold
     , Tw.p_2
     , Tw.w_full
     , Tw.box_border
     , Tw.cursor_pointer
-    , Css.hover [ Tw.bg_color Tw.teal_600 ]
     ]
 
 
@@ -173,18 +162,29 @@ aStyle : List Css.Style
 aStyle =
     [ Tw.no_underline
     , Tw.block
+    , Tw.transition_colors
     , Tw.bg_color Tw.teal_700
     , Css.nthOfType "even"
         [ Tw.bg_color Tw.teal_800
         ]
+    , Css.hover [ Tw.bg_color Tw.teal_600 ]
     ]
 
 
 chapterView : (Int -> msg) -> Api.Responses.Wiki.Chapter -> Html msg
 chapterView msg chapter =
     a [ css aStyle, onClick (msg chapter.order) ]
-        [ div [ css chapterStyle ] [ text chapter.title ]
+        [ div [ css listEntryStyle ] [ text chapter.title ]
         ]
+
+
+innerSideBarStyle : List Css.Style
+innerSideBarStyle =
+    [ Tw.flex_col
+    , Tw.space_y_3
+    , Tw.sticky
+    , Tw.top_0
+    ]
 
 
 container : { content : List (Html msg), popular : List Api.Responses.Page.Page, chapters : List Api.Responses.Wiki.Chapter, jumpMsg : Int -> msg, more : List Api.Responses.Page.Page } -> Html msg
@@ -209,8 +209,10 @@ container settings =
 
             _ ->
                 div [ css containerPopularStyle ]
-                    [ div [] (div [ css popularTitleStyle ] [ text "Inhalt" ] :: List.map (chapterView settings.jumpMsg) settings.chapters)
-                    , div [] (div [ css popularTitleStyle ] [ text "Populär" ] :: List.map popularView settings.popular)
+                    [ div [ css innerSideBarStyle ]
+                        [ div [] (div [ css popularTitleStyle ] [ text "Inhalt" ] :: List.map (chapterView settings.jumpMsg) settings.chapters)
+                        , div [] (div [ css popularTitleStyle ] [ text "Populär" ] :: List.map popularView settings.popular)
+                        ]
                     ]
         ]
 
