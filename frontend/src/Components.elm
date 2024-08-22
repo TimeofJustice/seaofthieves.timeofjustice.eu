@@ -162,7 +162,7 @@ container settings =
 
                         _ ->
                             div []
-                                (div [ css popularTitleStyle ] [ text "More" ]
+                                (div [ css popularTitleStyle ] [ text "Siehe mehr" ]
                                     :: List.map moreView settings.more
                                 )
                    ]
@@ -173,7 +173,7 @@ container settings =
 
             _ ->
                 div [ css containerPopularStyle ]
-                    (div [ css popularTitleStyle ] [ text "Popular" ] :: List.map popularView settings.popular)
+                    (div [ css popularTitleStyle ] [ text "Populär" ] :: List.map popularView settings.popular)
         ]
 
 
