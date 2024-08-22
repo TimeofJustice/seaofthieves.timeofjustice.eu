@@ -17,7 +17,7 @@ def visit_page(request):
     if path == '':
         return to_response(False, {}, 'missing_parameters')
     
-    page = Page.objects.filter(path=path).first()
+    page = Page.objects.filter(path__iexact=path).first()
 
     if page is None:
         return to_response(False, {}, 'not_found')
@@ -25,7 +25,7 @@ def visit_page(request):
     page.views += 1
     page.save()
 
-    pages = Page.objects.exclude(path=path)
+    pages = Page.objects.exclude(path__iexact=path)
 
     most_viewed = sorted(pages, key=lambda x: x.views, reverse=True)
     most_viewed = most_viewed[:5]
@@ -96,15 +96,30 @@ def module_to_dict(module):
 
         rows = []
 
+        # [
+        #    [
+        #        {'type': 'text', 'value': 'Row 1, Column 1'},
+        #    ]
+        #]
+
         if module.rows:
-            # (type, value), (type, value), ...
-            rows_json = module.rows.split('),')
-            rows_json = [row.strip() for row in rows_json]
-            rows_json = [row[1:] if row.startswith('(') else row for row in rows_json]
-            rows_json = [row[:-1] if row.endswith(')') else row for row in rows_json]
-            rows_json = [row.split(',') for row in rows_json]
-            rows_json = [[value.strip() for value in row] for row in rows_json]
-            rows = [row_to_dict(row[0], row[1]) for row in rows_json]
+            rows_list = module.rows.split('\n')
+
+            for row in rows_list:
+                row = row.strip()
+
+                if row == '': continue
+
+                cells = row.split('),')
+                cells = [cell.strip() for cell in cells]
+                cells = [cell[1:] if cell.startswith('(') else cell for cell in cells]
+                cells = [cell[:-1] if cell.endswith(')') else cell for cell in cells]
+                cells = [cell.split(',') for cell in cells]
+                cells = [[value.strip() for value in cell] for cell in cells]
+
+                row = [row_to_dict(cell[0], cell[1]) for cell in cells]
+
+                rows.append(row)
 
         return {
             'type': 'table',
