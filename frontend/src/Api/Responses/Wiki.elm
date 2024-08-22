@@ -68,18 +68,6 @@ type CellType
     | GoldCell Int
 
 
-decodeTextCell : Decoder CellType
-decodeTextCell =
-    Decode.field "value" Decode.string
-        |> Decode.map TextCell
-
-
-decodeGoldCell : Decoder CellType
-decodeGoldCell =
-    Decode.field "value" Decode.int
-        |> Decode.map GoldCell
-
-
 decodeWikiModule : Decoder WikiModule
 decodeWikiModule =
     Decode.field "type" Decode.string
@@ -103,7 +91,7 @@ decodeWikiModule =
                             |> Decode.map TableModule
 
                     _ ->
-                        Decode.fail "Invalid type"
+                        Decode.succeed (BlockModule { content = "Error with module" })
             )
 
 
@@ -122,7 +110,7 @@ decodeCellType =
                             |> Decode.map GoldCell
 
                     _ ->
-                        Decode.fail "Invalid type"
+                        Decode.succeed (TextCell "Error with cell")
             )
 
 

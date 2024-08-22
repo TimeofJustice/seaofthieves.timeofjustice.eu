@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from .models import Page, Wiki
+from .models import Page, Wiki, Module
 
 
 def to_response(was_successful, data, message=''):
@@ -17,7 +17,7 @@ def visit_page(request):
     if path == '':
         return to_response(False, {}, 'missing_parameters')
     
-    page = Page.objects.filter(path=path).first()
+    page = Page.objects.filter(path__iexact=path).first()
 
     if page is None:
         return to_response(False, {}, 'not_found')
@@ -25,7 +25,7 @@ def visit_page(request):
     page.views += 1
     page.save()
 
-    pages = Page.objects.exclude(path=path)
+    pages = Page.objects.exclude(path__iexact=path)
 
     most_viewed = sorted(pages, key=lambda x: x.views, reverse=True)
     most_viewed = most_viewed[:5]
@@ -83,21 +83,43 @@ def module_to_dict(module):
         return {
             'type': 'image',
             'value': {
-                'description': module.description,
+                'description': module.content,
                 'path': module.path
             }
         }
     elif module.type == 'table':
         columns = []
-        for column in module.columns.all():
-            columns.append(column.title)
+
+        if module.columns:
+            columns = module.columns.split(',')
+            columns = [column.strip() for column in columns]
 
         rows = []
-        for row in module.rows.all():
-            row_columns = []
-            for column in row.columns.all():
-                row_columns.append(row_to_dict(column))
-            rows.append(row_columns)
+
+        # [
+        #    [
+        #        {'type': 'text', 'value': 'Row 1, Column 1'},
+        #    ]
+        #]
+
+        if module.rows:
+            rows_list = module.rows.split('\n')
+
+            for row in rows_list:
+                row = row.strip()
+
+                if row == '': continue
+
+                cells = row.split('),')
+                cells = [cell.strip() for cell in cells]
+                cells = [cell[1:] if cell.startswith('(') else cell for cell in cells]
+                cells = [cell[:-1] if cell.endswith(')') else cell for cell in cells]
+                cells = [cell.split(',') for cell in cells]
+                cells = [[value.strip() for value in cell] for cell in cells]
+
+                row = [row_to_dict(cell[0], cell[1]) for cell in cells]
+
+                rows.append(row)
 
         return {
             'type': 'table',
@@ -109,16 +131,18 @@ def module_to_dict(module):
         }
     
 
-def row_to_dict(row):
-    if row.type == 'text':
+def row_to_dict(type, value):
+    if type == 'text':
         return {
             'type': 'text',
-            'value': row.title
+            'value': value
         }
-    elif row.type == 'gold':
+    elif type == 'gold':
+        value = int(value)
+
         return {
             'type': 'gold',
-            'value': row.amount
+            'value': value
         }
 
 
@@ -133,7 +157,7 @@ def wiki_to_dict(wiki):
 
     modules = []
 
-    for module in wiki.modules.all():
+    for module in Module.objects.filter(wiki=wiki):
         modules.append(module_to_dict(module))
 
     return {
