@@ -49,7 +49,7 @@ def visit_page(request):
     page.views += 1
     page.save()
 
-    pages = Page.objects.exclude(path__iexact=path)
+    pages = Page.objects.exclude(root__iexact=path).exclude(root__iexact=root, page__iexact=page)
 
     most_viewed = sorted(pages, key=lambda x: x.views, reverse=True)
     most_viewed = most_viewed[:5]
