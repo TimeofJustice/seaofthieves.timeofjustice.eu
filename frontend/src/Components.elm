@@ -69,7 +69,7 @@ titleDiv title =
 containerStyle : List Css.Style
 containerStyle =
     [ Tw.flex_1
-    , Tw.h_auto
+    , Tw.h_fit
     , Tw.w_full
     , Tw.max_w_6xl
     , Tw.rounded
@@ -90,7 +90,10 @@ containerInnerStyle =
     , Tw.p_10
     , Css.property "backdrop-filter" "blur(8px)"
     , Tw.space_y_3
-    , Tw.rounded
+    -- , Css.property "border-radius" "0.2rem 0 0 0.15rem"
+    , Tw.overflow_x_hidden
+    , Tw.rounded_tl
+    , Tw.rounded_bl
     ]
 
 
@@ -103,6 +106,8 @@ containerPopularStyle =
     , Tw.pt_10
     , Tw.w_64
     , Tw.space_y_3
+    , Tw.rounded_tr
+    , Tw.rounded_br
     ]
 
 
@@ -120,7 +125,7 @@ popularStyle =
     , Tw.p_2
     , Tw.w_full
     , Tw.box_border
-    , Css.hover [ Tw.bg_color Tw.teal_700 ]
+    , Css.hover [ Tw.bg_color Tw.teal_600 ]
     ]
 
 
@@ -160,7 +165,7 @@ chapterStyle =
     , Tw.w_full
     , Tw.box_border
     , Tw.cursor_pointer
-    , Css.hover [ Tw.bg_color Tw.teal_700 ]
+    , Css.hover [ Tw.bg_color Tw.teal_600 ]
     ]
 
 
