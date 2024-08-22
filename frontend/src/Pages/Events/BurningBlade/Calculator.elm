@@ -119,7 +119,13 @@ view model =
         Components.body
             { titles = [ "Events", "Burning Blade", "Calculator" ]
             , content = [ bodyView model ]
-            , background = "https://timeofjustice.eu/global/background/sea-of-thieves-sinking-the-burning-blade.webp"
+            , background =
+                case model.visitInfo of
+                    Success visitInfo ->
+                        visitInfo.backgroundUrl
+
+                    _ ->
+                        "https://timeofjustice.eu/global/background/sea-of-thieves-cannon-guild.jpg"
             }
     }
 
