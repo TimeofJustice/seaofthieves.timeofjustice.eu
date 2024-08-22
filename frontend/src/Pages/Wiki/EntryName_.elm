@@ -35,13 +35,17 @@ page _ route =
 
 type alias Model =
     { visitInfo : ResponseData Api.Responses.Visit.VisitInfo
+    , entryName : String
     , pageInfo : ResponseData Api.Responses.Wiki.PageInfo
     }
 
 
 init : Route { entryName : String } -> ( Model, Effect Msg )
 init route =
-    ( { visitInfo = Loading, pageInfo = Loading }
+    ( { visitInfo = Loading
+      , entryName = route.params.entryName
+      , pageInfo = Loading
+      }
     , Effect.batch
         [ Effect.sendCmd (Api.Requests.Visit.get { path = route.path, msg = ReceivedVisitResponse })
         , Effect.sendCmd (Api.Requests.Wiki.get { entryName = route.params.entryName, msg = ReceivedPageInfoResponse })
@@ -94,10 +98,24 @@ update msg model =
 
 view : Model -> View Msg
 view model =
-    { title = "Fish - SeaofThieves"
+    { title =
+        case model.pageInfo of
+            Success pageInfo ->
+                pageInfo.title ++ " - SeaofThieves"
+
+            _ ->
+                model.entryName ++ " - SeaofThieves"
     , body =
         Components.body
-            { titles = [ "Wiki", "Fish" ]
+            { titles =
+                [ "Wiki"
+                , case model.pageInfo of
+                    Success pageInfo ->
+                        pageInfo.title
+
+                    _ ->
+                        model.entryName
+                ]
             , content = [ bodyView model ]
             , background = "https://timeofjustice.eu/global/background/sea-of-thieves-sinking-the-burning-blade.webp"
             }
@@ -219,7 +237,7 @@ bodyView model =
                     pageInfo.popular
 
                 _ ->
-                    [ { title = "Home", route = Route.Path.Home_ } ]
+                    [ { title = "Startseite", route = Route.Path.Home_ } ]
         , more =
             []
         }

@@ -143,7 +143,7 @@ bodyView model =
                     pageInfo.popular
 
                 _ ->
-                    [ { title = "Home", route = Route.Path.Home_ } ]
+                    [ { title = "Startseite", route = Route.Path.Home_ } ]
         , more =
             case model.pageInfo of
                 Success pageInfo ->
@@ -192,7 +192,7 @@ pageView pageInfo rituals =
     [ Components.titleDiv pageInfo.title
     , div [] [ text pageInfo.description ]
     , Components.textInput
-        { label = "Amount of Rituals"
+        { label = "Anzahl der Rituale"
         , onInput = ChangeRituals
         , value =
             case rituals of
@@ -205,11 +205,11 @@ pageView pageInfo rituals =
     , table [ css tableStyle ]
         [ thead []
             [ tr []
-                [ th [ css cellStyle ] [ text "Grade I" ]
-                , th [ css cellStyle ] [ text "Grade II" ]
-                , th [ css cellStyle ] [ text "Grade III" ]
-                , th [ css cellStyle ] [ text "Grade IV" ]
-                , th [ css cellStyle ] [ text "Grade V" ]
+                [ th [ css cellStyle ] [ text "Stufe I" ]
+                , th [ css cellStyle ] [ text "Stufe II" ]
+                , th [ css cellStyle ] [ text "Stufe III" ]
+                , th [ css cellStyle ] [ text "Stufe IV" ]
+                , th [ css cellStyle ] [ text "Stufe V" ]
                 ]
             ]
         , tbody []

@@ -44,7 +44,7 @@ def visit_page(request):
 def burning_blade(request):
     return to_response(True, {
         'title': 'Burning Blade (Calculator)',
-        'description': 'Calculate the value of the Burning Blade ritual in Sea of Thieves according to the emissary grade.',
+        'description': 'Berechnet den Wert der Burning Blade für Sea of Thieves, basierend auf der Anzahl der Rituale',
         'baseValue': 14000,
         'ritualValue': 26000,
         'emissaryValues': {
@@ -95,12 +95,6 @@ def module_to_dict(module):
             columns = [column.strip() for column in columns]
 
         rows = []
-
-        # [
-        #    [
-        #        {'type': 'text', 'value': 'Row 1, Column 1'},
-        #    ]
-        #]
 
         if module.rows:
             rows_list = module.rows.split('\n')

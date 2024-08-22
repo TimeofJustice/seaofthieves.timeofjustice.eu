@@ -72,10 +72,10 @@ update msg model =
 
 view : Model -> View Msg
 view model =
-    { title = "Home - SeaofThieves"
+    { title = "Startseite - SeaofThieves"
     , body =
         Components.body
-            { titles = [ "Home" ]
+            { titles = [ "Startseite" ]
             , content = [ bodyView model ]
             , background = "https://timeofjustice.eu/global/background/sea-of-thieves-cannon-guild.jpg"
             }
