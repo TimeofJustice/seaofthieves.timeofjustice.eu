@@ -49,7 +49,8 @@ def visit_page(request):
     page.views += 1
     page.save()
 
-    pages = Page.objects.exclude(root__iexact=path).exclude(root__iexact=root, page__iexact=page)
+    pages = Page.objects.all()
+    pages = [page for page in pages if page != page]
 
     most_viewed = sorted(pages, key=lambda x: x.views, reverse=True)
     most_viewed = most_viewed[:5]
@@ -78,7 +79,7 @@ def burning_blade(request):
         'more': [
             {
                 'title': 'Burning Blade (World Event)',
-                'route': {'type': 'sub', 'path': '/events', 'page': 'burning-blade'}
+                'route': {'type': 'sub', 'value': {'path': '/events', 'page': 'burning-blade'}}
             }
         ]
         })
