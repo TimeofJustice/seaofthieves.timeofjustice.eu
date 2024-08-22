@@ -35,8 +35,8 @@ def visit_page(request):
     root = '/'.join(path.split('/')[0:-1])
     page = path.split('/')[-1]
     
-    root_page = Page.objects.filter(path__iexact=path).first()
-    sub_page = Page.objects.filter(path__iexact=root, page__iexact=page).first()
+    root_page = Page.objects.filter(root__iexact=path).first()
+    sub_page = Page.objects.filter(root__iexact=root, page__iexact=page).first()
 
     if root_page is None and sub_page is None:
         return to_response(False, {}, 'not_found')
