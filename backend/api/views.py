@@ -96,14 +96,16 @@ def module_to_dict(module):
             'type': 'text',
             'value': {
                 'title': module.title,
-                'content': module.content
+                'content': module.content,
+                'order': module.order
             }
         }
     elif module.type == 'block':
         return {
             'type': 'block',
             'value': {
-                'content': module.content
+                'content': module.content,
+                'order': module.order
             }
         }
     elif module.type == 'image':
@@ -111,7 +113,8 @@ def module_to_dict(module):
             'type': 'image',
             'value': {
                 'description': module.content,
-                'path': module.path
+                'path': module.path,
+                'order': module.order
             }
         }
     elif module.type == 'table':
@@ -147,7 +150,8 @@ def module_to_dict(module):
             'value': {
                 'title': module.title,
                 'columns': columns,
-                'rows': rows
+                'rows': rows,
+                'order': module.order
             }
         }
     
@@ -177,13 +181,19 @@ def wiki_to_dict(wiki):
         })
 
     modules = []
+    chapters = []
 
-    for module in Module.objects.filter(wiki=wiki):
+    for module in Module.objects.filter(wiki=wiki).order_by('order'):
+        if module.type == 'text' or module.type == 'table':
+            if module.title is not None:
+                chapters.append({'title': module.title, 'order': module.order})
+
         modules.append(module_to_dict(module))
 
     return {
         'title': wiki.title,
         'modules': modules,
+        'chapters': chapters,
         'more': more
     }
 

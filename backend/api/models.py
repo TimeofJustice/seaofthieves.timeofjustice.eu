@@ -31,6 +31,7 @@ class Module(models.Model):
     columns = models.TextField(blank=True, null=True)
     rows = models.TextField(blank=True, null=True)
     wiki = models.ForeignKey('Wiki', on_delete=models.CASCADE, blank=True, null=True)
+    order = models.IntegerField(default=0)
 
     def __str__(self):
         content = ""

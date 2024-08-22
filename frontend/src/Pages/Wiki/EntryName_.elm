@@ -5,11 +5,12 @@ import Api.Requests.Wiki
 import Api.Responses.Visit
 import Api.Responses.Wiki exposing (CellType(..), WikiModule(..))
 import Auth
+import Browser.Navigation exposing (load)
 import Components
 import Css
 import Effect exposing (Effect)
 import Html.Styled exposing (Html, div, img, table, tbody, td, text, th, thead, tr)
-import Html.Styled.Attributes exposing (css, src)
+import Html.Styled.Attributes exposing (css, id, src)
 import Http
 import Http.Extra
 import Page exposing (Page)
@@ -56,6 +57,7 @@ init route =
 type Msg
     = ReceivedVisitResponse (Result Http.Error (Result Api.Requests.Visit.Error Api.Responses.Visit.VisitInfo))
     | ReceivedPageInfoResponse (Result Http.Error (Result Api.Requests.Wiki.Error Api.Responses.Wiki.PageInfo))
+    | JumpToChapter Int
 
 
 update : Msg -> Model -> ( Model, Effect Msg )
@@ -94,6 +96,11 @@ update msg model =
                     ( { model | pageInfo = Error (Http.Extra.errorToString error) }
                     , Effect.none
                     )
+
+        JumpToChapter order ->
+            ( model
+            , Effect.sendCmd (load ("#" ++ String.fromInt order))
+            )
 
 
 view : Model -> View Msg
@@ -164,31 +171,31 @@ innerCellStyle =
 moduleView : Api.Responses.Wiki.WikiModule -> Html Msg
 moduleView module_ =
     case module_ of
-        TextModule { title, content } ->
+        TextModule { title, content, order } ->
             div
-                []
+                [ id (String.fromInt order) ]
                 [ Components.titleDiv title
                 , div
                     []
                     [ text content ]
                 ]
 
-        BlockModule { content } ->
+        BlockModule { content, order } ->
             div
-                []
+                [ id (String.fromInt order) ]
                 [ text content ]
 
-        ImageModule { description, path } ->
+        ImageModule { description, path, order } ->
             div
-                []
+                [ id (String.fromInt order) ]
                 [ img [ src path ] []
                 , div
                     [ css [ Tw.text_sm ] ]
                     [ text description ]
                 ]
 
-        TableModule { title, headers, rows } ->
-            div []
+        TableModule { title, headers, rows, order } ->
+            div [ id (String.fromInt order) ]
                 [ Components.titleDiv title
                 , table [ css tableStyle ]
                     [ thead []
@@ -237,6 +244,14 @@ bodyView model =
 
                 _ ->
                     [ Components.loadingView ]
+        , chapters =
+            case model.pageInfo of
+                Success pageInfo ->
+                    pageInfo.chapters
+
+                _ ->
+                    []
+        , jumpMsg = JumpToChapter
         , popular =
             case model.visitInfo of
                 Success pageInfo ->
