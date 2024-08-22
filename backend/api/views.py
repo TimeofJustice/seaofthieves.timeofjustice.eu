@@ -10,6 +10,21 @@ def to_response(was_successful, data, message=''):
         return JsonResponse({'status': message}, status=400)
     
 
+def route_to_dict(page):
+    if page.page is None:
+        return {
+            'title': page.title,
+            'route': {'type': 'root', 'value': {'path': page.root}},
+            'views': page.views
+        }
+    else:
+        return {
+            'title': page.title,
+            'route': {'type': 'sub', 'value': {'path': page.root, 'page': page.page}},
+            'views': page.views
+        }
+    
+
 def visit_page(request):
     get = request.GET
     path = get.get('path', '')
@@ -17,27 +32,39 @@ def visit_page(request):
     if path == '':
         return to_response(False, {}, 'missing_parameters')
     
-    page = Page.objects.filter(path__iexact=path).first()
+    root = '/'.join(path.split('/')[0:-1])
+    page = path.split('/')[-1]
+    
+    root_page = Page.objects.filter(root__iexact=path).first()
+    sub_page = Page.objects.filter(root__iexact=root, page__iexact=page).first()
 
-    if page is None:
+    if root_page is None and sub_page is None:
         return to_response(False, {}, 'not_found')
     
-    page.views += 1
-    page.save()
+    if root_page is not None:
+        current_page = root_page
+    else:
+        current_page = sub_page
+    
+    current_page.views += 1
+    current_page.save()
 
-    pages = Page.objects.exclude(path__iexact=path)
+    pages = Page.objects.all()
+    pages = [page for page in pages if page != current_page]
 
     most_viewed = sorted(pages, key=lambda x: x.views, reverse=True)
     most_viewed = most_viewed[:5]
 
     popular = []
     for page in most_viewed:
-        popular.append({
-            'title': page.title,
-            'route': page.path,
-        })
+        popular.append(route_to_dict(page))
 
-    return to_response(True, {'views': page.views, 'popular': popular})
+    background = current_page.background
+
+    if background is None:
+        background = 'https://timeofjustice.eu/global/background/sea-of-thieves-cannon-guild.jpg'
+
+    return to_response(True, {'views': current_page.views, 'popular': popular, 'background': background})
     
 
 # Create your views here.
@@ -57,7 +84,7 @@ def burning_blade(request):
         'more': [
             {
                 'title': 'Burning Blade (World Event)',
-                'route': '/events/burning-blade',
+                'route': {'type': 'sub', 'value': {'path': '/events', 'page': 'burning-blade'}}
             }
         ]
         })

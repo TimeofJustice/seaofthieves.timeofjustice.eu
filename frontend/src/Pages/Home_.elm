@@ -36,12 +36,14 @@ type alias Model =
 init : Route () -> ( Model, Effect Msg )
 init route =
     ( { visitInfo = Loading }
-    , Effect.sendCmd
-        (Api.Requests.Visit.get
-            { path = route.path
-            , msg = ReceivedVisitResponse
-            }
-        )
+    , Effect.batch
+        [ Effect.sendCmd
+            (Api.Requests.Visit.get
+                { path = route.path
+                , msg = ReceivedVisitResponse
+                }
+            )
+        ]
     )
 
 
@@ -77,7 +79,13 @@ view model =
         Components.body
             { titles = [ "Startseite" ]
             , content = [ bodyView model ]
-            , background = "https://timeofjustice.eu/global/background/sea-of-thieves-cannon-guild.jpg"
+            , background =
+                case model.visitInfo of
+                    Success visitInfo ->
+                        visitInfo.backgroundUrl
+
+                    _ ->
+                        "https://timeofjustice.eu/global/background/sea-of-thieves-cannon-guild.jpg"
             }
     }
 
