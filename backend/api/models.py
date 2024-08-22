@@ -11,9 +11,9 @@ class Page(models.Model):
 
     def __str__(self):
         if self.page is None:
-            return self.title + ' (' + self.root + ')'
+            return f"{self.title} ({self.root})"
         else:
-            return self.title + ' (' + self.root + '/' + self.page + ')'
+            return f"{self.title} ({self.root}/{self.page})"
 
 MODULE_TYPE_CHOICES = (
     ("text", "text"),
@@ -44,7 +44,7 @@ class Module(models.Model):
         elif self.type == "table":
             content = self.title
 
-        return "(" + self.id + ")" + self.type + ': ' + content
+        return f"({self.id}) {self.type}: {content}"
 
 
 class Wiki(models.Model):
