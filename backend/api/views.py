@@ -32,10 +32,19 @@ def visit_page(request):
     if path == '':
         return to_response(False, {}, 'missing_parameters')
     
-    page = Page.objects.filter(path__iexact=path).first()
+    root = path.split('/')[0:-1].join('/')
+    page = path.split('/')[-1]
+    
+    root_page = Page.objects.filter(path__iexact=path).first()
+    sub_page = Page.objects.filter(path__iexact=root, page__iexact=page).first()
 
-    if page is None:
+    if root_page is None and sub_page is None:
         return to_response(False, {}, 'not_found')
+    
+    if root_page is not None:
+        page = root_page
+    else:
+        page = sub_page
     
     page.views += 1
     page.save()
