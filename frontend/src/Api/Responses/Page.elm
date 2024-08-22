@@ -11,27 +11,82 @@ type alias Page =
     }
 
 
+type Route
+    = RootRoute RootRouteDetails
+    | SubRoute SubRouteDetails
+
+
+type alias RootRouteDetails =
+    { path : String
+    }
+
+
+type alias SubRouteDetails =
+    { path : String
+    , page : String
+    }
+
+
+decodeRootRoute : Decode.Decoder RootRouteDetails
+decodeRootRoute =
+    Decode.succeed RootRouteDetails
+        |> Decode.andMap (Decode.field "path" Decode.string)
+
+
+decodeSubRoute : Decode.Decoder SubRouteDetails
+decodeSubRoute =
+    Decode.succeed SubRouteDetails
+        |> Decode.andMap (Decode.field "path" Decode.string)
+        |> Decode.andMap (Decode.field "page" Decode.string)
+
+
+decodeRoute : Decode.Decoder Route
+decodeRoute =
+    Decode.field "type" Decode.string
+        |> Decode.andThen
+            (\moduleType ->
+                case moduleType of
+                    "root" ->
+                        Decode.field "value" decodeRootRoute
+                            |> Decode.map RootRoute
+
+                    "sub" ->
+                        Decode.field "value" decodeSubRoute
+                            |> Decode.map SubRoute
+
+                    _ ->
+                        Decode.succeed (RootRoute { path = "/" })
+            )
+
+
 decode : Decode.Decoder Page
 decode =
     Decode.succeed Page
         |> Decode.andMap (Decode.field "title" Decode.string)
-        |> Decode.andMap (Decode.field "route" Decode.string |> Decode.andThen decodeRoute)
+        |> Decode.andMap (Decode.field "route" decodeRoute |> Decode.andThen parseRoute)
 
 
-decodeRoute : String -> Decode.Decoder Path
-decodeRoute string =
-    case string of
-        "/" ->
-            Decode.succeed Route.Path.Home_
+parseRoute : Route -> Decode.Decoder Path
+parseRoute route =
+    case route of
+        RootRoute { path } ->
+            case path of
+                "/" ->
+                    Decode.succeed Route.Path.Home_
 
-        "/events/burning-blade/calculator" ->
-            Decode.succeed Route.Path.Events_BurningBlade_Calculator
+                "/events/burning-blade/calculator" ->
+                    Decode.succeed Route.Path.Events_BurningBlade_Calculator
 
-        "/wiki/fisch" ->
-            Decode.succeed (Route.Path.Wiki_EntryName_ { entryName = "fisch" })
+                _ ->
+                    Decode.succeed Route.Path.Home_
 
-        "/events/burning-blade" ->
-            Decode.succeed (Route.Path.Events_EventName_ { eventName = "burning-blade" })
+        SubRoute { path, page } ->
+            case path of
+                "/wiki" ->
+                    Decode.succeed (Route.Path.Wiki_EntryName_ { entryName = page })
 
-        _ ->
-            Decode.succeed Route.Path.Home_
+                "/events" ->
+                    Decode.succeed (Route.Path.Events_EventName_ { eventName = page })
+
+                _ ->
+                    Decode.succeed Route.Path.Home_

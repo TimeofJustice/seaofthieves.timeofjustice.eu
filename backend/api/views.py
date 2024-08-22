@@ -10,6 +10,21 @@ def to_response(was_successful, data, message=''):
         return JsonResponse({'status': message}, status=400)
     
 
+def route_to_dict(page):
+    if page.page is None:
+        return {
+            'title': page.title,
+            'route': {'type': 'root', 'path': page.root},
+            'views': page.views
+        }
+    else:
+        return {
+            'title': page.title,
+            'route': {'type': 'sub', 'path': page.root, 'page': page.page},
+            'views': page.views
+        }
+    
+
 def visit_page(request):
     get = request.GET
     path = get.get('path', '')
@@ -32,10 +47,7 @@ def visit_page(request):
 
     popular = []
     for page in most_viewed:
-        popular.append({
-            'title': page.title,
-            'route': page.path,
-        })
+        popular.append(route_to_dict(page))
 
     return to_response(True, {'views': page.views, 'popular': popular})
     
@@ -57,7 +69,7 @@ def burning_blade(request):
         'more': [
             {
                 'title': 'Burning Blade (World Event)',
-                'route': '/events/burning-blade',
+                'route': {'type': 'sub', 'path': '/events', 'page': 'burning-blade'}
             }
         ]
         })

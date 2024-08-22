@@ -3,12 +3,13 @@ from django.conf import settings
 
 # Create your models here.
 class Page(models.Model):
-    path = models.CharField(max_length=255)
+    root = models.CharField(max_length=255)
+    page = models.CharField(max_length=255, blank=True, null=True)
     title = models.CharField(max_length=255)
     views = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.title + ' (' + self.path + ')'
+        return self.title + ' (' + self.path + '/' + self.page + ')'
 
 MODULE_TYPE_CHOICES = (
     ("text", "text"),
@@ -28,7 +29,18 @@ class Module(models.Model):
     wiki = models.ForeignKey('Wiki', on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
-        return str(self.id)
+        content = ""
+
+        if self.type == "text":
+            content = self.title
+        elif self.type == "block":
+            content = self.content[:10]
+        elif self.type == "image":
+            content = self.content[:10]
+        elif self.type == "table":
+            content = self.title
+
+        return "(" + self.id + ")" + self.type + ': ' + content
 
 
 class Wiki(models.Model):
