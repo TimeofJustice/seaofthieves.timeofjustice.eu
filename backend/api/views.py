@@ -42,15 +42,15 @@ def visit_page(request):
         return to_response(False, {}, 'not_found')
     
     if root_page is not None:
-        page = root_page
+        current_page = root_page
     else:
-        page = sub_page
+        current_page = sub_page
     
-    page.views += 1
-    page.save()
+    current_page.views += 1
+    current_page.save()
 
     pages = Page.objects.all()
-    pages = [page for page in pages if page != page]
+    pages = [page for page in pages if page != current_page]
 
     most_viewed = sorted(pages, key=lambda x: x.views, reverse=True)
     most_viewed = most_viewed[:5]
@@ -59,7 +59,7 @@ def visit_page(request):
     for page in most_viewed:
         popular.append(route_to_dict(page))
 
-    return to_response(True, {'views': page.views, 'popular': popular})
+    return to_response(True, {'views': current_page.views, 'popular': popular})
     
 
 # Create your views here.
