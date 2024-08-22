@@ -60,6 +60,33 @@ def visit_page(request):
         popular.append(route_to_dict(page))
 
     return to_response(True, {'views': current_page.views, 'popular': popular})
+
+
+def background(request):
+    get = request.GET
+    path = get.get('path', '')
+
+    if path == '':
+        return to_response(False, {}, 'missing_parameters')
+    
+    root = '/'.join(path.split('/')[0:-1])
+    page = path.split('/')[-1]
+    
+    root_page = Page.objects.filter(root__iexact=path).first()
+    sub_page = Page.objects.filter(root__iexact=root, page__iexact=page).first()
+
+    if root_page is None and sub_page is None:
+        return to_response(False, {}, 'not_found')
+    
+    if root_page is not None:
+        current_page = root_page
+    else:
+        current_page = sub_page
+    
+    if current_page.background is None:
+        return to_response(True, {'background': 'https://timeofjustice.eu/global/background/sea-of-thieves-cannon-guild.jpg'})
+    
+    return to_response(True, {'background': current_page.background})
     
 
 # Create your views here.
