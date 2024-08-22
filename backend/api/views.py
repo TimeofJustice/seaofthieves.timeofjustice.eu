@@ -14,13 +14,13 @@ def route_to_dict(page):
     if page.page is None:
         return {
             'title': page.title,
-            'route': {'type': 'root', 'path': page.root},
+            'route': {'type': 'root', 'value': {'path': page.root}},
             'views': page.views
         }
     else:
         return {
             'title': page.title,
-            'route': {'type': 'sub', 'path': page.root, 'page': page.page},
+            'route': {'type': 'sub', 'value': {'path': page.root, 'page': page.page}},
             'views': page.views
         }
     
