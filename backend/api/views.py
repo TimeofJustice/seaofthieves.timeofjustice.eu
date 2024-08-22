@@ -32,7 +32,7 @@ def visit_page(request):
     if path == '':
         return to_response(False, {}, 'missing_parameters')
     
-    root = path.split('/')[0:-1].join('/')
+    root = '/'.join(path.split('/')[0:-1])
     page = path.split('/')[-1]
     
     root_page = Page.objects.filter(path__iexact=path).first()
