@@ -1,10 +1,11 @@
-module Components exposing (body, container, errorView, loadingView, textInput, titleDiv, goldView)
+module Components exposing (body, container, errorView, goldView, loadingView, textInput, titleDiv)
 
 import Api.Responses.Page
+import Api.Responses.Wiki
 import Css exposing (url)
 import Html
 import Html.Styled exposing (Html, a, button, div, img, input, label, li, option, select, span, text, textarea)
-import Html.Styled.Attributes exposing (css, disabled, fromUnstyled, placeholder, readonly, rows, selected, src, type_, value)
+import Html.Styled.Attributes exposing (css, disabled, fromUnstyled, href, placeholder, readonly, rows, selected, src, type_, value)
 import Html.Styled.Events exposing (onBlur, onClick, onInput)
 import Icons
 import Route.Path exposing (Path)
@@ -76,7 +77,6 @@ containerStyle =
     , Tw.border_solid
     , Tw.border_color Tw.emerald_700
     , Tw.flex
-    , Tw.overflow_hidden
     ]
 
 
@@ -90,6 +90,7 @@ containerInnerStyle =
     , Tw.p_10
     , Css.property "backdrop-filter" "blur(8px)"
     , Tw.space_y_3
+    , Tw.rounded
     ]
 
 
@@ -101,6 +102,7 @@ containerPopularStyle =
     , Tw.p_5
     , Tw.pt_10
     , Tw.w_64
+    , Tw.space_y_3
     ]
 
 
@@ -114,8 +116,7 @@ popularTitleStyle =
 popularStyle : List Css.Style
 popularStyle =
     [ Tw.text_color Tw.amber_400
-    , Tw.font_bold
-    , Tw.bg_color Tw.teal_800
+    , Tw.font_semibold
     , Tw.p_2
     , Tw.w_full
     , Tw.box_border
@@ -125,7 +126,7 @@ popularStyle =
 
 popularView : Api.Responses.Page.Page -> Html msg
 popularView page =
-    a [ css [ Tw.no_underline ], fromUnstyled (Route.Path.href page.route) ]
+    a [ css aStyle, fromUnstyled (Route.Path.href page.route) ]
         [ div [ css popularStyle ] [ text page.title ]
         ]
 
@@ -151,7 +152,37 @@ moreView page =
     li [] [ link { label = page.title, href = page.route } ]
 
 
-container : { content : List (Html msg), popular : List Api.Responses.Page.Page, more : List Api.Responses.Page.Page } -> Html msg
+chapterStyle : List Css.Style
+chapterStyle =
+    [ Tw.text_color Tw.amber_400
+    , Tw.font_semibold
+    , Tw.p_2
+    , Tw.w_full
+    , Tw.box_border
+    , Tw.cursor_pointer
+    , Css.hover [ Tw.bg_color Tw.teal_700 ]
+    ]
+
+
+aStyle : List Css.Style
+aStyle =
+    [ Tw.no_underline
+    , Tw.block
+    , Tw.bg_color Tw.teal_700
+    , Css.nthOfType "even"
+        [ Tw.bg_color Tw.teal_800
+        ]
+    ]
+
+
+chapterView : (Int -> msg) -> Api.Responses.Wiki.Chapter -> Html msg
+chapterView msg chapter =
+    a [ css aStyle, onClick (msg chapter.order) ]
+        [ div [ css chapterStyle ] [ text chapter.title ]
+        ]
+
+
+container : { content : List (Html msg), popular : List Api.Responses.Page.Page, chapters : List Api.Responses.Wiki.Chapter, jumpMsg : Int -> msg, more : List Api.Responses.Page.Page } -> Html msg
 container settings =
     div [ css containerStyle ]
         [ div [ css containerInnerStyle ]
@@ -173,7 +204,9 @@ container settings =
 
             _ ->
                 div [ css containerPopularStyle ]
-                    (div [ css popularTitleStyle ] [ text "Populär" ] :: List.map popularView settings.popular)
+                    [ div [] (div [ css popularTitleStyle ] [ text "Inhalt" ] :: List.map (chapterView settings.jumpMsg) settings.chapters)
+                    , div [] (div [ css popularTitleStyle ] [ text "Populär" ] :: List.map popularView settings.popular)
+                    ]
         ]
 
 
@@ -258,7 +291,7 @@ bodyStyle bgUrl =
     , Tw.font_sans
     , Tw.flex
     , Tw.flex_col
-    , Tw.overflow_auto
+    , Tw.overflow_hidden
     , Tw.text_color Tw.white
     ]
 
@@ -271,6 +304,7 @@ innerStyle =
     , Tw.flex
     , Tw.flex_col
     , Tw.items_center
+    , Tw.overflow_auto
     ]
 
 

@@ -48,12 +48,16 @@ init route =
 
 
 type Msg
-    = ReceivedVisitResponse (Result Http.Error (Result Api.Requests.Visit.Error Api.Responses.Visit.VisitInfo))
+    = NoOp
+    | ReceivedVisitResponse (Result Http.Error (Result Api.Requests.Visit.Error Api.Responses.Visit.VisitInfo))
 
 
 update : Msg -> Model -> ( Model, Effect Msg )
 update msg model =
     case msg of
+        NoOp ->
+            ( model, Effect.none )
+
         ReceivedVisitResponse result ->
             case result of
                 Ok (Ok pageInfo) ->
@@ -94,6 +98,8 @@ bodyView : Model -> Html Msg
 bodyView model =
     Components.container
         { content = [ Components.titleDiv "Sea of Thieves Wiki" ]
+        , chapters = []
+        , jumpMsg = \_ -> NoOp
         , popular =
             case model.visitInfo of
                 Success pageInfo ->

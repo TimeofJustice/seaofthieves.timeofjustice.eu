@@ -51,7 +51,8 @@ init route =
 
 
 type Msg
-    = ReceivedVisitResponse (Result Http.Error (Result Api.Requests.Visit.Error Api.Responses.Visit.VisitInfo))
+    = NoOp
+    | ReceivedVisitResponse (Result Http.Error (Result Api.Requests.Visit.Error Api.Responses.Visit.VisitInfo))
     | ChangeRituals String
     | ReceivedPageInfoResponse (Result Http.Error (Result Api.Requests.BurningCalculator.Error Api.Responses.BurningCalculator.PageInfo))
 
@@ -59,6 +60,9 @@ type Msg
 update : Msg -> Model -> ( Model, Effect Msg )
 update msg model =
     case msg of
+        NoOp ->
+            ( model, Effect.none )
+
         ReceivedVisitResponse result ->
             case result of
                 Ok (Ok pageInfo) ->
@@ -143,6 +147,8 @@ bodyView model =
 
                 _ ->
                     [ Components.loadingView ]
+        , chapters = []
+        , jumpMsg = \_ -> NoOp
         , popular =
             case model.visitInfo of
                 Success pageInfo ->
