@@ -3,11 +3,11 @@ module Components exposing
     , container
     , errorView
     , goldView
+    , inputWithIconButton
     , loadingView
     , primaryIconButton
     , textInput
     , titleDiv
-    , inputWithIconButton
     )
 
 import Api.Responses.Page
@@ -364,9 +364,18 @@ errorView message =
     div [ css errorTextStyle ] [ text message ]
 
 
-goldView : Html msg
-goldView =
-    img [ src "https://timeofjustice.eu/global/sea-of-thieves-gold.webp" ] []
+goldViewStyle : List Css.Style
+goldViewStyle =
+    [ Tw.inline_flex
+    , Tw.items_center
+    , Tw.space_x_1
+    , Tw.w_fit
+    ]
+
+
+goldView : String -> Html msg
+goldView value =
+    div [ css goldViewStyle ] [ div [] [ text value ], img [ src "https://timeofjustice.eu/global/sea-of-thieves-gold.webp" ] [] ]
 
 
 navBarStyle : List Css.Style

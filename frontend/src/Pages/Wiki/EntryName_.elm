@@ -22,6 +22,7 @@ import Tailwind.Extra as Tw
 import Tailwind.Theme as Tw
 import Tailwind.Utilities as Tw
 import View exposing (View)
+import Markdown.Extra as Markdown
 
 
 page : Shared.Model -> Route { entryName : String } -> Page Model Msg
@@ -175,23 +176,17 @@ moduleView module_ =
             div
                 [ id (String.fromInt order) ]
                 [ Components.titleDiv title
-                , div
-                    []
-                    [ text content ]
+                , Markdown.fromString [] content
                 ]
 
         BlockModule { content, order } ->
-            div
-                [ id (String.fromInt order) ]
-                [ text content ]
+            Markdown.fromString [ id (String.fromInt order) ] content
 
         ImageModule { description, path, order } ->
             div
                 [ id (String.fromInt order) ]
                 [ img [ src path ] []
-                , div
-                    [ css [ Tw.text_sm ] ]
-                    [ text description ]
+                , Markdown.fromString [ css [ Tw.text_sm ] ] description
                 ]
 
         TableModule { title, headers, rows, order } ->
@@ -216,10 +211,10 @@ moduleView module_ =
                                             td [ css cellStyle ]
                                                 [ case cell of
                                                     TextCell content ->
-                                                        text content
+                                                        Markdown.fromString [] content
 
                                                     GoldCell amount ->
-                                                        div [ css innerCellStyle ] [ div [] [ text (String.fromInt amount) ], Components.goldView ]
+                                                        div [ css innerCellStyle ] [ Components.goldView (String.fromInt amount) ]
                                                 ]
                                         )
                                         row
