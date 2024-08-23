@@ -53,7 +53,7 @@ class Wiki(models.Model):
     title = models.CharField(max_length=255, unique=True, primary_key=True)
     more = models.ManyToManyField(Page, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
-    page = models.ForeignKey(Page, on_delete=models.CASCADE, blank=True, null=True)
+    page = models.ForeignKey(Page, on_delete=models.CASCADE, blank=True, null=True, related_name="route")
     
     def __str__(self):
         return self.title
