@@ -1,4 +1,14 @@
-module Components exposing (body, container, errorView, goldView, loadingView, textInput, titleDiv)
+module Components exposing
+    ( body
+    , container
+    , errorView
+    , goldView
+    , loadingView
+    , primaryIconButton
+    , textInput
+    , titleDiv
+    , inputWithIconButton
+    )
 
 import Api.Responses.Page
 import Api.Responses.Wiki
@@ -13,6 +23,64 @@ import Tailwind.Color
 import Tailwind.Extra as Tw
 import Tailwind.Theme as Tw
 import Tailwind.Utilities as Tw
+
+
+buttonStyle : List Css.Style
+buttonStyle =
+    [ Tw.items_center
+    , Tw.justify_center
+    , Tw.flex
+    , Tw.transition
+    , Tw.outline_none
+    , Tw.border_0
+    , Tw.rounded
+    , Tw.p_2
+    , Tw.cursor_pointer
+    , Tw.text_sm
+    ]
+
+
+primaryButtonStyle : List Css.Style
+primaryButtonStyle =
+    buttonStyle
+        ++ [ Tw.bg_color Tw.teal_800
+           , Tw.text_color Tw.white
+           , Tw.fill_color Tw.white
+           , Css.hover [ Tw.bg_color Tw.teal_700 ]
+           , Css.disabled
+                [ Tw.bg_color Tw.blue_800
+                , Tw.cursor_not_allowed
+                ]
+           ]
+
+
+primaryButton : { label : String, onClick : msg } -> Html msg
+primaryButton settings =
+    button
+        [ css primaryButtonStyle
+        , onClick settings.onClick
+        ]
+        [ text settings.label ]
+
+
+primaryIconButton : { icon : Html msg, onClick : msg, disabled : Bool } -> Html msg
+primaryIconButton settings =
+    button
+        [ css primaryButtonStyle
+        , onClick settings.onClick
+        , disabled settings.disabled
+        ]
+        [ settings.icon ]
+
+
+primaryIconLink : { icon : Html msg } -> Html msg
+primaryIconLink settings =
+    a [ fromUnstyled (Route.Path.href Route.Path.Search) ]
+        [ div
+            [ css primaryButtonStyle
+            ]
+            [ settings.icon ]
+        ]
 
 
 inputLabel : List Css.Style
@@ -50,6 +118,49 @@ textInput settings =
             , css baseInputStyle
             ]
             []
+        ]
+
+
+inputButtonStyle : List Css.Style
+inputButtonStyle =
+    primaryButtonStyle
+        ++ [ Tw.absolute
+           , Tw.top_0
+           , Tw.right_0
+           , Tw.bottom_0
+           , Tw.items_center
+           , Tw.flex
+           , Tw.border_2
+           , Tw.border_color Tw.transparent
+           , Tw.box_border
+           , Tw.h_full
+           , Tw.px_2
+           , Tw.bg_clip_padding
+           ]
+
+
+inputContainerStyle : List Css.Style
+inputContainerStyle =
+    [ Tw.relative
+    , Tw.flex_col
+    , Tw.flex
+    , Tw.w_full
+    ]
+
+
+inputWithIconButton : { label : String, icon : Html msg, onInput : String -> msg, onClick : msg, value : String } -> Html msg
+inputWithIconButton settings =
+    label [ css inputLabel ]
+        [ div [ css inputContainerStyle ]
+            [ input
+                [ placeholder settings.label
+                , value settings.value
+                , onInput settings.onInput
+                , css baseInputStyle
+                ]
+                []
+            , button [ css inputButtonStyle, onClick settings.onClick ] [ settings.icon ]
+            ]
         ]
 
 
@@ -203,17 +314,22 @@ container settings =
                                 )
                    ]
             )
-        , case settings.popular of
-            [] ->
-                text ""
+        , div [ css containerPopularStyle ]
+            [ div [ css innerSideBarStyle ]
+                [ case settings.chapters of
+                    [] ->
+                        text ""
 
-            _ ->
-                div [ css containerPopularStyle ]
-                    [ div [ css innerSideBarStyle ]
-                        [ div [] (div [ css popularTitleStyle ] [ text "Inhalt" ] :: List.map (chapterView settings.jumpMsg) settings.chapters)
-                        , div [] (div [ css popularTitleStyle ] [ text "Populär" ] :: List.map popularView settings.popular)
-                        ]
-                    ]
+                    _ ->
+                        div [] (div [ css popularTitleStyle ] [ text "Inhalt" ] :: List.map (chapterView settings.jumpMsg) settings.chapters)
+                , case settings.popular of
+                    [] ->
+                        text ""
+
+                    _ ->
+                        div [] (div [ css popularTitleStyle ] [ text "Populär" ] :: List.map popularView settings.popular)
+                ]
+            ]
         ]
 
 
@@ -286,6 +402,7 @@ navBar settings =
             [ span [] [ text "Sea of Thieves" ]
             , div [ css navBarTitleStyle ] titleSpans
             ]
+        , primaryIconLink { icon = Icons.search }
         ]
 
 
