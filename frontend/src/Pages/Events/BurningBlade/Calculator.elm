@@ -21,6 +21,7 @@ import Tailwind.Extra as Tw
 import Tailwind.Theme as Tw
 import Tailwind.Utilities as Tw
 import View exposing (View)
+import Markdown.Extra as Markdown
 
 
 page : Shared.Model -> Route () -> Page Model Msg
@@ -202,7 +203,7 @@ innerCellStyle =
 pageView : Api.Responses.BurningCalculator.PageInfo -> Maybe Int -> List (Html Msg)
 pageView pageInfo rituals =
     [ Components.titleDiv pageInfo.title
-    , div [] [ text pageInfo.description ]
+    , div [] [ Markdown.fromString [] pageInfo.description ]
     , Components.textInput
         { label = "Anzahl der Rituale"
         , onInput = ChangeRituals
@@ -242,7 +243,7 @@ pageView pageInfo rituals =
 
 goldView : Float -> Html msg
 goldView gold =
-    td [ css cellStyle ] [ div [ css innerCellStyle ] [ div [] [ text (String.fromFloat gold) ], Components.goldView ] ]
+    td [ css cellStyle ] [ div [ css innerCellStyle ] [ Components.goldView (String.fromFloat gold) ] ]
 
 
 calcGold : Maybe Int -> Float -> Float

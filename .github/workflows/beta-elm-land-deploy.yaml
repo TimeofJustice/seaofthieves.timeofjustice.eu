@@ -4,6 +4,7 @@ on:
   push:
     branches-ignore:
       - "release"
+      - "main"
     paths:
       - frontend/**
 

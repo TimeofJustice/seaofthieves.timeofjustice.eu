@@ -3,7 +3,7 @@ module Pages.Wiki.EntryName_ exposing (Model, Msg, page)
 import Api.Requests.Visit
 import Api.Requests.Wiki
 import Api.Responses.Visit
-import Api.Responses.Wiki exposing (CellType(..), WikiModule(..))
+import Api.Responses.Wiki exposing (WikiModule(..))
 import Auth
 import Browser.Navigation exposing (load)
 import Components
@@ -13,6 +13,7 @@ import Html.Styled exposing (Html, div, img, table, tbody, td, text, th, thead, 
 import Html.Styled.Attributes exposing (css, id, src)
 import Http
 import Http.Extra
+import Markdown.Extra as Markdown
 import Page exposing (Page)
 import ResponseData exposing (ResponseData(..))
 import Route exposing (Route)
@@ -175,23 +176,17 @@ moduleView module_ =
             div
                 [ id (String.fromInt order) ]
                 [ Components.titleDiv title
-                , div
-                    []
-                    [ text content ]
+                , Markdown.fromString [] content
                 ]
 
         BlockModule { content, order } ->
-            div
-                [ id (String.fromInt order) ]
-                [ text content ]
+            Markdown.fromString [ id (String.fromInt order) ] content
 
         ImageModule { description, path, order } ->
             div
                 [ id (String.fromInt order) ]
                 [ img [ src path ] []
-                , div
-                    [ css [ Tw.text_sm ] ]
-                    [ text description ]
+                , Markdown.fromString [ css [ Tw.text_sm ] ] description
                 ]
 
         TableModule { title, headers, rows, order } ->
@@ -214,13 +209,7 @@ moduleView module_ =
                                     (List.map
                                         (\cell ->
                                             td [ css cellStyle ]
-                                                [ case cell of
-                                                    TextCell content ->
-                                                        text content
-
-                                                    GoldCell amount ->
-                                                        div [ css innerCellStyle ] [ div [] [ text (String.fromInt amount) ], Components.goldView ]
-                                                ]
+                                                [ Markdown.fromString [] cell ]
                                         )
                                         row
                                     )
