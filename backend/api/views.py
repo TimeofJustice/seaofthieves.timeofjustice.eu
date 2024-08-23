@@ -205,3 +205,32 @@ def wiki_page(request, page):
         return to_response(False, {}, 'not_found')
     
     return to_response(True, wiki_to_dict(wiki))
+
+
+def search(request):
+    get = request.GET
+    query = get.get('query', '')
+
+    if query == '':
+        pages = Page.objects.all()
+
+        most_viewed = sorted(pages, key=lambda x: x.views, reverse=True)
+        most_viewed = most_viewed[:5]
+
+        popular = []
+        for page in most_viewed:
+            popular.append(route_to_dict(page))
+
+        return to_response(True, {'pages': popular})
+    
+    query = query.lower()
+
+    pages = Page.objects.all()
+
+    results = []
+
+    for page in pages:
+        if query in page.title.lower():
+            results.append(route_to_dict(page))
+    
+    return to_response(True, results)	
