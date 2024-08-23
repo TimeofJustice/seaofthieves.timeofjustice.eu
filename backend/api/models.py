@@ -6,8 +6,10 @@ class Page(models.Model):
     root = models.CharField(max_length=255)
     page = models.CharField(max_length=255, blank=True, null=True)
     title = models.CharField(max_length=255)
+    description = models.TextField(default="")
     background = models.URLField(blank=True, null=True)
     views = models.IntegerField(default=0)
+    exclude = models.BooleanField(default=False)
 
     def __str__(self):
         if self.page is None:
@@ -52,6 +54,7 @@ class Wiki(models.Model):
     title = models.CharField(max_length=255, unique=True, primary_key=True)
     more = models.ManyToManyField(Page, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
+    page = models.ForeignKey(Page, on_delete=models.CASCADE, blank=True, null=True, related_name="route")
     
     def __str__(self):
         return self.title

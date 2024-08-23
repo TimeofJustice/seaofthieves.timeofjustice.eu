@@ -14,12 +14,14 @@ def route_to_dict(page):
     if page.page is None:
         return {
             'title': page.title,
+            'description': page.description,
             'route': {'type': 'root', 'value': {'path': page.root}},
             'views': page.views
         }
     else:
         return {
             'title': page.title,
+            'description': page.description,
             'route': {'type': 'sub', 'value': {'path': page.root, 'page': page.page}},
             'views': page.views
         }
@@ -49,7 +51,7 @@ def visit_page(request):
     current_page.views += 1
     current_page.save()
 
-    pages = Page.objects.all()
+    pages = Page.objects.filter(exclude=False)
     pages = [page for page in pages if page != current_page]
 
     most_viewed = sorted(pages, key=lambda x: x.views, reverse=True)
@@ -205,3 +207,55 @@ def wiki_page(request, page):
         return to_response(False, {}, 'not_found')
     
     return to_response(True, wiki_to_dict(wiki))
+
+
+def search(request):
+    get = request.GET
+    query = get.get('query', '')
+
+    if query == '':
+        pages = Page.objects.filter(exclude=False)
+
+        most_viewed = sorted(pages, key=lambda x: x.views, reverse=True)
+        most_viewed = most_viewed[:5]
+
+        popular = []
+        for page in most_viewed:
+            popular.append(route_to_dict(page))
+
+        return to_response(True, {'pages': popular})
+    
+    query = query.lower()
+
+    pages = Page.objects.filter(exclude=False)
+
+    results = []
+
+    for page in pages:
+        if query in page.title.lower():
+            results.append(route_to_dict(page))
+
+    wiki = Wiki.objects.all()
+
+    for page in wiki:
+        if page.page is None:
+            continue
+
+        if query in page.title.lower():
+            results.append(route_to_dict(page.page))
+        else:
+            modules = Module.objects.filter(wiki=page)
+
+            for module in modules:
+                if module.title and query in module.title.lower():
+                    results.append(route_to_dict(page.page))
+                elif module.content and  query in module.content.lower():
+                    results.append(route_to_dict(page.page))
+                elif module.rows and query in module.rows.lower():
+                    results.append(route_to_dict(page.page))
+                elif module.columns and query in module.columns.lower():
+                    results.append(route_to_dict(page.page))
+
+    results = list({v['title']: v for v in results}.values())
+    
+    return to_response(True, {'pages': results})	
