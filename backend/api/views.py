@@ -236,19 +236,22 @@ def search(request):
     wiki = Wiki.objects.all()
 
     for page in wiki:
+        if page.page is None:
+            continue
+
         if query in page.title.lower():
             results.append(route_to_dict(page.page))
         else:
             modules = Module.objects.filter(wiki=page)
 
             for module in modules:
-                if query in module.title.lower():
+                if module.title and query in module.title.lower():
                     results.append(route_to_dict(page.page))
-                elif query in module.content.lower():
+                elif module.content and  query in module.content.lower():
                     results.append(route_to_dict(page.page))
-                elif query in module.rows.lower():
+                elif module.rows and query in module.rows.lower():
                     results.append(route_to_dict(page.page))
-                elif query in module.columns.lower():
+                elif module.columns and query in module.columns.lower():
                     results.append(route_to_dict(page.page))
 
     results = list({v['title']: v for v in results}.values())
