@@ -1,4 +1,4 @@
-module Api.Responses.Wiki exposing (CellType(..), PageInfo, WikiModule(..), decode, Chapter)
+module Api.Responses.Wiki exposing (PageInfo, WikiModule(..), decode, Chapter)
 
 import Api.Responses.Page
 import Json.Decode as Decode exposing (Decoder)
@@ -44,7 +44,7 @@ type alias ImageModuleContent =
 
 
 type alias TableModuleContent =
-    { title : String, headers : List String, rows : List (List CellType), order : Int }
+    { title : String, headers : List String, rows : List (List String), order : Int }
 
 
 decodeTextModuleContent : Decoder TextModuleContent
@@ -75,13 +75,8 @@ decodeTableModuleContent =
     Decode.succeed TableModuleContent
         |> Decode.andMap (Decode.field "title" Decode.string)
         |> Decode.andMap (Decode.field "columns" (Decode.list Decode.string))
-        |> Decode.andMap (Decode.field "rows" (Decode.list (Decode.list decodeCellType)))
+        |> Decode.andMap (Decode.field "rows" (Decode.list (Decode.list Decode.string)))
         |> Decode.andMap (Decode.field "order" Decode.int)
-
-
-type CellType
-    = TextCell String
-    | GoldCell Int
 
 
 decodeWikiModule : Decoder WikiModule
@@ -108,25 +103,6 @@ decodeWikiModule =
 
                     _ ->
                         Decode.succeed (BlockModule { content = "Error with module", order = 0 })
-            )
-
-
-decodeCellType : Decoder CellType
-decodeCellType =
-    Decode.field "type" Decode.string
-        |> Decode.andThen
-            (\cellType ->
-                case cellType of
-                    "text" ->
-                        Decode.field "value" Decode.string
-                            |> Decode.map TextCell
-
-                    "gold" ->
-                        Decode.field "value" Decode.int
-                            |> Decode.map GoldCell
-
-                    _ ->
-                        Decode.succeed (TextCell "Error with cell")
             )
 
 

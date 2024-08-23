@@ -3,7 +3,7 @@ module Pages.Wiki.EntryName_ exposing (Model, Msg, page)
 import Api.Requests.Visit
 import Api.Requests.Wiki
 import Api.Responses.Visit
-import Api.Responses.Wiki exposing (CellType(..), WikiModule(..))
+import Api.Responses.Wiki exposing (WikiModule(..))
 import Auth
 import Browser.Navigation exposing (load)
 import Components
@@ -13,6 +13,7 @@ import Html.Styled exposing (Html, div, img, table, tbody, td, text, th, thead, 
 import Html.Styled.Attributes exposing (css, id, src)
 import Http
 import Http.Extra
+import Markdown.Extra as Markdown
 import Page exposing (Page)
 import ResponseData exposing (ResponseData(..))
 import Route exposing (Route)
@@ -22,7 +23,6 @@ import Tailwind.Extra as Tw
 import Tailwind.Theme as Tw
 import Tailwind.Utilities as Tw
 import View exposing (View)
-import Markdown.Extra as Markdown
 
 
 page : Shared.Model -> Route { entryName : String } -> Page Model Msg
@@ -209,13 +209,7 @@ moduleView module_ =
                                     (List.map
                                         (\cell ->
                                             td [ css cellStyle ]
-                                                [ case cell of
-                                                    TextCell content ->
-                                                        Markdown.fromString [] content
-
-                                                    GoldCell amount ->
-                                                        div [ css innerCellStyle ] [ Components.goldView (String.fromInt amount) ]
-                                                ]
+                                                [ Markdown.fromString [] cell ]
                                         )
                                         row
                                     )

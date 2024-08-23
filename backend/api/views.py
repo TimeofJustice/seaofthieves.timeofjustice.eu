@@ -135,16 +135,10 @@ def module_to_dict(module):
 
                 if row == '': continue
 
-                cells = row.split('),')
+                cells = row.split(',')
                 cells = [cell.strip() for cell in cells]
-                cells = [cell[1:] if cell.startswith('(') else cell for cell in cells]
-                cells = [cell[:-1] if cell.endswith(')') else cell for cell in cells]
-                cells = [cell.split(',') for cell in cells]
-                cells = [[value.strip() for value in cell] for cell in cells]
 
-                row = [row_to_dict(cell[0], cell[1]) for cell in cells]
-
-                rows.append(row)
+                rows.append(cells)
 
         return {
             'type': 'table',
@@ -154,21 +148,6 @@ def module_to_dict(module):
                 'rows': rows,
                 'order': module.order
             }
-        }
-    
-
-def row_to_dict(type, value):
-    if type == 'text':
-        return {
-            'type': 'text',
-            'value': value
-        }
-    elif type == 'gold':
-        value = int(value)
-
-        return {
-            'type': 'gold',
-            'value': value
         }
 
 
