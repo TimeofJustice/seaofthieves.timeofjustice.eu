@@ -8,6 +8,7 @@ class Page(models.Model):
     title = models.CharField(max_length=255)
     background = models.URLField(blank=True, null=True)
     views = models.IntegerField(default=0)
+    exclude = models.BooleanField(default=False)
 
     def __str__(self):
         if self.page is None:

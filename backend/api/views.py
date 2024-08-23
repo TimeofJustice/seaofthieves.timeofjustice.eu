@@ -49,7 +49,7 @@ def visit_page(request):
     current_page.views += 1
     current_page.save()
 
-    pages = Page.objects.all()
+    pages = Page.objects.filter(exclude=False)
     pages = [page for page in pages if page != current_page]
 
     most_viewed = sorted(pages, key=lambda x: x.views, reverse=True)
@@ -212,7 +212,7 @@ def search(request):
     query = get.get('query', '')
 
     if query == '':
-        pages = Page.objects.all()
+        pages = Page.objects.filter(exclude=False)
 
         most_viewed = sorted(pages, key=lambda x: x.views, reverse=True)
         most_viewed = most_viewed[:5]
@@ -225,7 +225,7 @@ def search(request):
     
     query = query.lower()
 
-    pages = Page.objects.all()
+    pages = Page.objects.filter(exclude=False)
 
     results = []
 
