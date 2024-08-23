@@ -8,9 +8,10 @@ import Api.Responses.Visit
 import Auth
 import Components
 import Effect exposing (Effect)
-import Html.Styled exposing (Html, div, table, tbody, td, text, th, thead, tr)
-import Html.Styled.Attributes exposing (css)
+import Html.Styled exposing (Html, a, div, table, tbody, td, text, th, thead, tr)
+import Html.Styled.Attributes exposing (css, fromUnstyled, href)
 import Http
+import Css
 import Http.Extra
 import Icons
 import Page exposing (Page)
@@ -19,6 +20,7 @@ import Route exposing (Route)
 import Route.Path
 import Shared
 import Tailwind.Utilities as Tw
+import Tailwind.Theme as Tw
 import View exposing (View)
 
 
@@ -170,13 +172,47 @@ searchResults searchInfo =
                 [ Components.errorView error ]
 
             Success { pages } ->
-                List.map pageView pages
+                case pages of
+                    [] ->
+                        [ text "Keine Ergebnisse gefunden." ]
+
+                    _ ->
+                        List.map pageView pages
         )
+
+
+pageStyle : List Css.Style
+pageStyle =
+    [ Tw.bg_color Tw.teal_700
+    , Tw.block
+    , Css.nthOfType "even"
+        [ Tw.bg_color Tw.teal_800
+        ]
+    , Css.hover [ Tw.bg_color Tw.teal_600 ]
+    , Tw.no_underline
+    , Tw.p_2
+    ]
+
+
+pageTitleStyle : List Css.Style
+pageTitleStyle =
+    [ Tw.text_color Tw.amber_400
+    , Tw.text_lg
+    , Tw.font_semibold
+    , Tw.underline
+    ]
+
+
+pageDescriptionStyle : List Css.Style
+pageDescriptionStyle =
+    [ Tw.text_color Tw.white
+    , Tw.text_sm
+    ]
 
 
 pageView : Api.Responses.Page.Page -> Html Msg
 pageView pageInfo =
-    div []
-        [ div [] [ text pageInfo.title ]
-        , div [] [ text pageInfo.description ]
+    a [ css pageStyle, fromUnstyled (Route.Path.href pageInfo.route) ]
+        [ div [ css pageTitleStyle ] [ text pageInfo.title ]
+        , div [ css pageDescriptionStyle ] [ text pageInfo.description ]
         ]
