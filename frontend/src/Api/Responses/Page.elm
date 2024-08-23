@@ -7,6 +7,7 @@ import Route.Path exposing (Path)
 
 type alias Page =
     { title : String
+    , description : String
     , route : Path
     }
 
@@ -63,6 +64,7 @@ decode : Decode.Decoder Page
 decode =
     Decode.succeed Page
         |> Decode.andMap (Decode.field "title" Decode.string)
+        |> Decode.andMap (Decode.field "description" Decode.string)
         |> Decode.andMap (Decode.field "route" decodeRoute |> Decode.andThen parseRoute)
 
 

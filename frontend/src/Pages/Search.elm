@@ -178,4 +178,5 @@ pageView : Api.Responses.Page.Page -> Html Msg
 pageView pageInfo =
     div []
         [ div [] [ text pageInfo.title ]
+        , div [] [ text pageInfo.description ]
         ]

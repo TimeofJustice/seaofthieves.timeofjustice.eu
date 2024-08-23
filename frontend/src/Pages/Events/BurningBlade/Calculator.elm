@@ -155,7 +155,7 @@ bodyView model =
                     pageInfo.popular
 
                 _ ->
-                    [ { title = "Startseite", route = Route.Path.Home_ } ]
+                    []
         , more =
             case model.pageInfo of
                 Success pageInfo ->

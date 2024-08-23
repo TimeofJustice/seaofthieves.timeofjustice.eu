@@ -6,6 +6,7 @@ class Page(models.Model):
     root = models.CharField(max_length=255)
     page = models.CharField(max_length=255, blank=True, null=True)
     title = models.CharField(max_length=255)
+    description = models.TextField(default="")
     background = models.URLField(blank=True, null=True)
     views = models.IntegerField(default=0)
     exclude = models.BooleanField(default=False)
