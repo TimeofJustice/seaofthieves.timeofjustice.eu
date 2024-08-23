@@ -34,7 +34,11 @@ customHtmlInline : Inline i -> BaseHtml.Html msg
 customHtmlInline inline =
     case inline of
         CodeInline value ->
-            Html.Styled.toUnstyled <| Components.goldView value
+            if String.startsWith "$" value then
+                Html.Styled.toUnstyled <| Components.goldView (String.replace "$" "" value)
+
+            else
+                Inline.defaultHtml (Just customHtmlInline) inline
 
         _ ->
             Inline.defaultHtml (Just customHtmlInline) inline
