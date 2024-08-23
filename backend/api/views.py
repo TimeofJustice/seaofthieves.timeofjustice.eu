@@ -71,6 +71,8 @@ def visit_page(request):
 
 # Create your views here.
 def burning_blade(request):
+    burning_blade = Page.objects.filter(title__iexact='Burning Blade (World Event)').first()
+
     return to_response(True, {
         'title': 'Burning Blade (Calculator)',
         'description': 'Berechnet den Wert der Burning Blade für Sea of Thieves, basierend auf der Anzahl der Rituale',
@@ -84,10 +86,7 @@ def burning_blade(request):
             'grade5': 2.5,
         },
         'more': [
-            {
-                'title': 'Burning Blade (World Event)',
-                'route': {'type': 'sub', 'value': {'path': '/events', 'page': 'burning-blade'}}
-            }
+            route_to_dict(burning_blade)
         ]
         })
 
