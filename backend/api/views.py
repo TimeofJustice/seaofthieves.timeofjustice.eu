@@ -232,5 +232,25 @@ def search(request):
     for page in pages:
         if query in page.title.lower():
             results.append(route_to_dict(page))
+
+    wiki = Wiki.objects.all()
+
+    for page in wiki:
+        if query in page.title.lower():
+            results.append(route_to_dict(page.page))
+        else:
+            modules = Module.objects.filter(wiki=page)
+
+            for module in modules:
+                if query in module.title.lower():
+                    results.append(route_to_dict(page.page))
+                elif query in module.content.lower():
+                    results.append(route_to_dict(page.page))
+                elif query in module.rows.lower():
+                    results.append(route_to_dict(page.page))
+                elif query in module.columns.lower():
+                    results.append(route_to_dict(page.page))
+
+    results = list({v['title']: v for v in results}.values())
     
     return to_response(True, {'pages': results})	
