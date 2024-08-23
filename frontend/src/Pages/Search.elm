@@ -13,6 +13,7 @@ import Html.Styled.Attributes exposing (css, fromUnstyled, href)
 import Http
 import Css
 import Http.Extra
+import Key
 import Icons
 import Page exposing (Page)
 import ResponseData exposing (ResponseData(..))
@@ -29,7 +30,7 @@ page _ route =
     Page.new
         { init = \_ -> init route
         , update = update
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = \_ -> Key.onEnter Search
         , view = view
         }
 
