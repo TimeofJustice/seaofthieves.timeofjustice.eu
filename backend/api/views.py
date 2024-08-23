@@ -233,4 +233,4 @@ def search(request):
         if query in page.title.lower():
             results.append(route_to_dict(page))
     
-    return to_response(True, results)	
+    return to_response(True, {'pages': results})	
