@@ -1,5 +1,6 @@
 module Components exposing
     ( body
+    , commodityView
     , container
     , errorView
     , goldView
@@ -376,6 +377,11 @@ goldViewStyle =
 goldView : String -> Html msg
 goldView value =
     div [ css goldViewStyle ] [ div [] [ text value ], img [ src "https://timeofjustice.eu/global/sea-of-thieves-gold.webp" ] [] ]
+
+
+commodityView : String -> String -> Html msg
+commodityView icon value =
+    div [ css goldViewStyle ] [ div [] [ text value ], img [ src icon ] [] ]
 
 
 navBarStyle : List Css.Style

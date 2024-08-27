@@ -23,6 +23,9 @@ fromString attr string =
 customHtmlBlock : Block b i -> List (BaseHtml.Html msg)
 customHtmlBlock block =
     case block of
+        Block.Paragraph content inlines ->
+            [ BaseHtml.div [] (List.map customHtmlInline inlines) ]
+
         _ ->
             Block.defaultHtml
                 (Just customHtmlBlock)
@@ -36,6 +39,9 @@ customHtmlInline inline =
         CodeInline value ->
             if String.startsWith "$" value then
                 Html.Styled.toUnstyled <| Components.goldView (String.replace "$" "" value)
+
+            else if String.startsWith "!g" value then
+                Html.Styled.toUnstyled <| Components.commodityView "https://timeofjustice.eu/global/icons/sea-of-thieves-trade-route-gemstones.png" (String.replace "!g" "" value)
 
             else
                 Inline.defaultHtml (Just customHtmlInline) inline
