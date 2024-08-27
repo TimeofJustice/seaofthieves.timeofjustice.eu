@@ -4,6 +4,7 @@ module Components exposing
     , container
     , errorView
     , goldView
+    , inlineLink
     , inputWithIconButton
     , loadingView
     , primaryIconButton
@@ -240,18 +241,27 @@ popularView page =
 
 linkStyle : List Css.Style
 linkStyle =
-    [ Tw.text_color Tw.amber_400
+    [ Tw.text_color Tw.emerald_400
     , Tw.cursor_pointer
-    , Tw.underline
+    , Tw.no_underline
     , Tw.text_center
     , Tw.transition_colors
-    , Css.hover [ Tw.text_color Tw.amber_600 ]
+    , Tw.font_semibold
+    , Css.hover
+        [ Tw.text_color Tw.green_400
+        , Tw.underline
+        ]
     ]
 
 
 link : { label : String, href : Path } -> Html msg
 link settings =
     a [ css linkStyle, fromUnstyled (Route.Path.href settings.href) ] [ text settings.label ]
+
+
+inlineLink : { inline : Html msg, href : String } -> Html msg
+inlineLink settings =
+    a [ css linkStyle, href settings.href ] [ settings.inline ]
 
 
 moreView : Api.Responses.Page.Page -> Html msg

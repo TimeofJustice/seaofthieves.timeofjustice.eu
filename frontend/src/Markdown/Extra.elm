@@ -64,5 +64,18 @@ customHtmlInline inline =
             else
                 Inline.defaultHtml (Just customHtmlInline) inline
 
+        Link url title inlines ->
+            Html.Styled.toUnstyled <|
+                Components.inlineLink
+                    { inline =
+                        case title of
+                            Just t ->
+                                text t
+
+                            Nothing ->
+                                fromUnstyled <| BaseHtml.span [] (List.map customHtmlInline inlines)
+                    , href = url
+                    }
+
         _ ->
             Inline.defaultHtml (Just customHtmlInline) inline
