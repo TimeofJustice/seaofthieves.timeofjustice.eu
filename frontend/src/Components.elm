@@ -1,8 +1,10 @@
 module Components exposing
     ( body
+    , commodityView
     , container
     , errorView
     , goldView
+    , inlineLink
     , inputWithIconButton
     , loadingView
     , primaryIconButton
@@ -239,18 +241,27 @@ popularView page =
 
 linkStyle : List Css.Style
 linkStyle =
-    [ Tw.text_color Tw.amber_400
+    [ Tw.text_color Tw.emerald_400
     , Tw.cursor_pointer
-    , Tw.underline
+    , Tw.no_underline
     , Tw.text_center
     , Tw.transition_colors
-    , Css.hover [ Tw.text_color Tw.amber_600 ]
+    , Tw.font_semibold
+    , Css.hover
+        [ Tw.text_color Tw.green_400
+        , Tw.underline
+        ]
     ]
 
 
 link : { label : String, href : Path } -> Html msg
 link settings =
     a [ css linkStyle, fromUnstyled (Route.Path.href settings.href) ] [ text settings.label ]
+
+
+inlineLink : { inline : Html msg, href : String } -> Html msg
+inlineLink settings =
+    a [ css linkStyle, href settings.href ] [ settings.inline ]
 
 
 moreView : Api.Responses.Page.Page -> Html msg
@@ -364,18 +375,35 @@ errorView message =
     div [ css errorTextStyle ] [ text message ]
 
 
-goldViewStyle : List Css.Style
-goldViewStyle =
+iconViewStyle : List Css.Style
+iconViewStyle =
     [ Tw.inline_flex
     , Tw.items_center
     , Tw.space_x_1
     , Tw.w_fit
+    , Tw.h_fit
+    ]
+
+
+iconStyle : String -> List Css.Style
+iconStyle bgUrl =
+    [ Css.backgroundImage (url bgUrl)
+    , Tw.p_3
+    , Tw.bg_contain
+    , Tw.bg_center
+    , Tw.bg_no_repeat
+    , Tw.box_border
     ]
 
 
 goldView : String -> Html msg
 goldView value =
-    div [ css goldViewStyle ] [ div [] [ text value ], img [ src "https://timeofjustice.eu/global/sea-of-thieves-gold.webp" ] [] ]
+    div [ css iconViewStyle ] [ div [] [ text value ], img [ src "https://timeofjustice.eu/global/sea-of-thieves-gold.webp" ] [] ]
+
+
+commodityView : String -> String -> Html msg
+commodityView icon value =
+    div [ css iconViewStyle ] [ div [] [ text value ], div [ css (iconStyle icon) ] [] ]
 
 
 navBarStyle : List Css.Style

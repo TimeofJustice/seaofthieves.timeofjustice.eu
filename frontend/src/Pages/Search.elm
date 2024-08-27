@@ -7,21 +7,22 @@ import Api.Responses.Search
 import Api.Responses.Visit
 import Auth
 import Components
+import Css
 import Effect exposing (Effect)
 import Html.Styled exposing (Html, a, div, table, tbody, td, text, th, thead, tr)
 import Html.Styled.Attributes exposing (css, fromUnstyled, href)
 import Http
-import Css
 import Http.Extra
-import Key
 import Icons
+import Key
+import Markdown.Extra as Markdown
 import Page exposing (Page)
 import ResponseData exposing (ResponseData(..))
 import Route exposing (Route)
 import Route.Path
 import Shared
-import Tailwind.Utilities as Tw
 import Tailwind.Theme as Tw
+import Tailwind.Utilities as Tw
 import View exposing (View)
 
 
@@ -215,5 +216,5 @@ pageView : Api.Responses.Page.Page -> Html Msg
 pageView pageInfo =
     a [ css pageStyle, fromUnstyled (Route.Path.href pageInfo.route) ]
         [ div [ css pageTitleStyle ] [ text pageInfo.title ]
-        , div [ css pageDescriptionStyle ] [ text pageInfo.description ]
+        , Markdown.fromString [ css pageDescriptionStyle ] pageInfo.description
         ]
