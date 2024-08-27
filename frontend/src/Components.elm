@@ -378,10 +378,8 @@ iconViewStyle =
 iconStyle : String -> List Css.Style
 iconStyle bgUrl =
     [ Css.backgroundImage (url bgUrl)
-    , Tw.h_full
-    , Tw.w_full
     , Tw.p_3
-    , Tw.bg_cover
+    , Tw.bg_contain
     , Tw.bg_center
     , Tw.bg_no_repeat
     , Tw.box_border
