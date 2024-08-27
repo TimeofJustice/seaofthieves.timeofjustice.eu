@@ -365,23 +365,37 @@ errorView message =
     div [ css errorTextStyle ] [ text message ]
 
 
-goldViewStyle : List Css.Style
-goldViewStyle =
+iconViewStyle : List Css.Style
+iconViewStyle =
     [ Tw.inline_flex
     , Tw.items_center
     , Tw.space_x_1
     , Tw.w_fit
+    , Tw.h_fit
+    ]
+
+
+iconStyle : String -> List Css.Style
+iconStyle bgUrl =
+    [ Css.backgroundImage (url bgUrl)
+    , Tw.h_full
+    , Tw.w_full
+    , Tw.p_3
+    , Tw.bg_cover
+    , Tw.bg_center
+    , Tw.bg_no_repeat
+    , Tw.box_border
     ]
 
 
 goldView : String -> Html msg
 goldView value =
-    div [ css goldViewStyle ] [ div [] [ text value ], img [ src "https://timeofjustice.eu/global/sea-of-thieves-gold.webp" ] [] ]
+    div [ css iconViewStyle ] [ div [] [ text value ], img [ src "https://timeofjustice.eu/global/sea-of-thieves-gold.webp" ] [] ]
 
 
 commodityView : String -> String -> Html msg
 commodityView icon value =
-    div [ css goldViewStyle ] [ div [] [ text value ], img [ src icon ] [] ]
+    div [ css iconViewStyle ] [ div [] [ text value ], div [ css (iconStyle icon) ] [] ]
 
 
 navBarStyle : List Css.Style
